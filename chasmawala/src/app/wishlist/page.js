@@ -19,7 +19,7 @@ export default function WishlistPage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {wishlistItems.map((product) => (
-            <div key={product.id} className="relative bg-white rounded-lg shadow-md p-4">
+            <div key={product._id} className="relative bg-white rounded-lg shadow-md p-4">
               <Image src={product.image} alt={product.name} width={300} height={200} className="w-full h-60 object-cover rounded-md" />
               
               <div className="mt-4 text-center">
@@ -38,7 +38,7 @@ export default function WishlistPage() {
                 </button>
 
                 <button 
-                  onClick={() => removeFromWishlist(product.id)} 
+                  onClick={() => removeFromWishlist(product._id)} 
                   className="p-2 bg-red-500 text-white rounded-md hover:bg-red-600 flex items-center space-x-2"
                 >
                   <Trash2 className="w-5 h-5" />

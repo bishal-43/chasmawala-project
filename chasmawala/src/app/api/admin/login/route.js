@@ -1,6 +1,6 @@
-// /app/api/admin/login/route.js
+// app/api/admin/login/route.js
 import { NextResponse } from 'next/server';
-import User from '@/models/userModel'; // Assuming this is your User model
+import User from '@/models/userModel';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { connectDB } from '@/config/db';
@@ -9,36 +9,46 @@ export async function POST(req) {
   await connectDB();
   const { email, password } = await req.json();
 
-  // Find the admin user by email
+  // 1. Find the user and check role
   const user = await User.findOne({ email });
-
-  // If the user doesn't exist or is not an admin, return Unauthorized
-  if (!user || !(user.role == "admin" || user.role == "superadmin")) {
+  if (!user || !(user.role === "admin" || user.role === "superadmin")) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // Check if the password matches
+  // 2. Check password
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
     return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
   }
 
-  // Generate the admin JWT token
+  // 3. Generate JWT
   const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
-    expiresIn: "1d", // Token expires in 1 day
+    expiresIn: "1d",
   });
 
-  // Set the token in the cookies and return the response
+
+  console.log("Setting admin-token cookie with value:", token);
+
+
+  // 4. Set secure cookie
   const response = NextResponse.json({
+    success: true,
     message: "Logged in successfully",
-    role: user.role  // <-- add this!
-  });
+    role: user.role,
+    redirectPath: user.role === "superadmin" ? "/superadmin" : "/admin",
+    user: {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    },
+  }, { status: 200 });
 
-  response.cookies.set("admin-token", token, {
+  response.cookies.set("auth-token", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production", // Ensure this is true in production
-    maxAge: 60 * 60 * 24, // 1 day
-    sameSite: "Strict", // Ensure the cookie is sent only in a same-site context
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 60 * 60 * 24,
+    sameSite: "Strict",
     path: "/",
   });
 

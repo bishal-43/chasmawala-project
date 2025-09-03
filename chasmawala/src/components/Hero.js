@@ -1,90 +1,118 @@
 "use client";
-import { useEffect, useRef } from "react";
-import Button  from "@/components/ui/Button"; // Ensure this component exists
-import { ArrowRight, Glasses } from "lucide-react";
 
-const Hero = () => {
-  const heroRef = useRef(null);
+import Link from "next/link";
+import Image from "next/image";
+import { ArrowRight, Star } from "lucide-react";
+import { motion } from "framer-motion";
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("animate-reveal");
-        }
-      },
-      { threshold: 0.1 }
-    );
+// --- Main Hero Component ---
+export default function Hero() {
+  // Animation variants for Framer Motion
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.2, delayChildren: 0.3 },
+    },
+  };
 
-    if (heroRef.current) {
-      observer.observe(heroRef.current);
-    }
-
-    return () => {
-      if (heroRef.current) {
-        observer.unobserve(heroRef.current);
-      }
-    };
-  }, []);
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { y: 0, opacity: 1, transition: { duration: 0.6, ease: "easeOut" } },
+  };
 
   return (
-    <section
-      id="home"
-      className="pt-32 pb-16 md:pt-40 md:pb-24 bg-gradient-to-b from-blue-50 to-white"
-    >
-      <div className="section-container">
-        <div className="max-w-3xl mx-auto text-center">
-          <div className="inline-block mb-4 px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium animate-fade-in">
-            Premium Eyewear Collection
-          </div>
+    <section id="home" className="relative bg-gray-50 overflow-hidden">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[85vh] py-20 sm:py-28">
+          
+          {/* --- Left Column: Text Content --- */}
+          <motion.div
+            className="text-center lg:text-left"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            <motion.div variants={itemVariants}>
+              <span className="px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-bold">
+                See Life Clearly
+              </span>
+            </motion.div>
 
-          <h1 className="heading-xl mb-6 animate-fade-in" ref={heroRef}>
-            See the World in Style
-            <br /> with Perfect Vision
-          </h1>
-
-          <p className="subheading mb-8 max-w-2xl mx-auto animate-fade-in animate-reveal-delay-1">
-            Discover our curated collection of designer frames and premium
-            lenses. Expert care for your eyes, style for your life.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in animate-reveal-delay-2">
-            <Button size="lg" className="button-hover w-full sm:w-auto">
-              Shop Collection
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="button-hover w-full sm:w-auto"
+            <motion.h1
+              className="text-4xl md:text-6xl font-extrabold text-gray-900 my-6 leading-tight"
+              variants={itemVariants}
             >
-              Book Eye Test
-              <Glasses className="ml-2 h-4 w-4" />
-            </Button>
-          </div>
-        </div>
+              Your Perfect Pair is Waiting.
+            </motion.h1>
 
-        <div className="mt-16 md:mt-24 relative mx-auto max-w-5xl animate-fade-in animate-reveal-delay-3">
-          <div className="aspect-[21/9] rounded-2xl overflow-hidden shadow-2xl">
-            <img
-              src="https://images.unsplash.com/photo-1618160702438-9b02ab6515c9"
-              alt="Premium Eyewear Collection"
-              className="w-full h-full object-cover"
-            />
+            <motion.p
+              className="text-lg md:text-xl text-gray-600 mb-10 max-w-lg mx-auto lg:mx-0"
+              variants={itemVariants}
+            >
+              Explore thousands of designer frames and advanced lenses, all backed by our expert optical care.
+            </motion.p>
+
+            <motion.div
+              className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4"
+              variants={itemVariants}
+            >
+              <Link href="/collections">
+                <button className="w-full sm:w-auto flex items-center justify-center px-8 py-4 bg-blue-600 text-white font-bold rounded-lg shadow-lg hover:bg-blue-700 transition-transform duration-300 transform hover:scale-105">
+                  Shop All Eyewear
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </button>
+              </Link>
+              <Link href="/virtual-tryOn">
+                 <button className="w-full sm:w-auto flex items-center justify-center px-8 py-4 bg-white text-gray-800 font-bold rounded-lg border-2 border-gray-200 shadow-md hover:border-blue-500 hover:text-blue-600 transition-all duration-300 transform hover:scale-105">
+                  Virtual Try-On
+                </button>
+              </Link>
+            </motion.div>
+            
+            {/* Social Proof Section */}
+            <motion.div className="mt-12 text-left" variants={itemVariants}>
+                <div className="flex items-center justify-center lg:justify-start">
+                    <div className="flex -space-x-2">
+                        <Image className="inline-block h-10 w-10 rounded-full ring-2 ring-white" src="https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="User 1" width={40} height={40} />
+                        <Image className="inline-block h-10 w-10 rounded-full ring-2 ring-white" src="https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="User 2" width={40} height={40} />
+                        <Image className="inline-block h-10 w-10 rounded-full ring-2 ring-white" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="User 3" width={40} height={40} />
+                    </div>
+                    <div className="ml-4">
+                        <div className="flex items-center">
+                           <Star className="w-5 h-5 text-yellow-400 fill-current" />
+                           <Star className="w-5 h-5 text-yellow-400 fill-current" />
+                           <Star className="w-5 h-5 text-yellow-400 fill-current" />
+                           <Star className="w-5 h-5 text-yellow-400 fill-current" />
+                           <Star className="w-5 h-5 text-yellow-400 fill-current" />
+                        </div>
+                        <p className="text-sm text-gray-600">Rated **4.9/5** by 1,200+ happy customers</p>
+                    </div>
+                </div>
+            </motion.div>
+          </motion.div>
+
+          {/* --- Right Column: Image Collage --- */}
+          <div className="hidden lg:block relative h-full">
+            <motion.div 
+              className="absolute top-0 left-10 w-[60%] h-[55%] rounded-2xl overflow-hidden shadow-2xl"
+              initial={{ opacity: 0, x: 50, rotate: 5 }}
+              animate={{ opacity: 1, x: 0, rotate: 0 }}
+              transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
+            >
+              <Image src="/images/hero/womenEyeglasses.jpg" alt="Woman wearing stylish eyeglasses" fill style={{ objectFit: 'cover' }} priority />
+            </motion.div>
+            <motion.div 
+              className="absolute bottom-0 right-0 w-[55%] h-[60%] rounded-2xl overflow-hidden shadow-2xl"
+              initial={{ opacity: 0, x: -50, rotate: -5 }}
+              animate={{ opacity: 1, x: 0, rotate: 0 }}
+              transition={{ duration: 0.8, delay: 0.7, ease: "easeOut" }}
+            >
+              <Image src="/images/hero/manSunglasses.jpg" alt="Man wearing modern sunglasses" fill style={{ objectFit: 'cover' }} />
+            </motion.div>
           </div>
-          <div className="absolute -top-6 -left-6 w-12 h-12 rounded-full bg-primary/20 animate-float"></div>
-          <div
-            className="absolute top-1/2 -right-8 w-16 h-16 rounded-full bg-primary/10 animate-float"
-            style={{ animationDelay: "1s" }}
-          ></div>
-          <div
-            className="absolute -bottom-8 left-1/4 w-20 h-20 rounded-full bg-primary/5 animate-float"
-            style={{ animationDelay: "2s" }}
-          ></div>
         </div>
       </div>
     </section>
   );
-};
-
-export default Hero;
+}

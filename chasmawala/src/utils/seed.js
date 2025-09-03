@@ -1,57 +1,51 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+import mongoose from 'mongoose';
+import Product from '../models/productModel.js';
+import { products } from './data.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-dotenv.config({ path: path.resolve(__dirname, '../../.env.local') });
+// Load env variables from project root .env.local
+dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 
+console.log("MONGO_URI:", process.env.MONGO_URI);
 
-import mongoose from "mongoose";
-import Product from "../models/productModel.js"; // Import Product model
-import { products } from "./data.js"; // Import products array
-
-// ✅ Connect to MongoDB
-console.log("MONGO_URI : ",process.env.MONGO_URI)
-mongoose.connect(process.env.MONGO_URI)
+// Connect to MongoDB
+await mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB Connected Successfully!"))
-  .catch((err) => console.error("❌ MongoDB Connection Error:", err));
+  .catch(err => {
+    console.error("❌ MongoDB Connection Error:", err);
+    process.exit(1);
+  });
 
 const seedDatabase = async () => {
   try {
-    console.log("🔄 Connecting to MongoDB...");
-
-    // ✅ Remove all existing products (if you want to clear)
-    // You can also consider checking for specific conditions (e.g., duplicate products)
+    console.log("🔄 Clearing old products...");
     await Product.deleteMany();
-    console.log("🗑️ Existing products removed!");
 
-    // ✅ Insert the new products (with a brand)
-    const productsWithBrand = products.map((p) => ({
+    const productsWithBrand = products.map(p => ({
       ...p,
-      brand: p.brand || "Generic Brand" // ✅ Assign a default brand if none exists
+      brand: p.brand || "Generic Brand"
     }));
 
-    // Check if any product already exists by name before inserting
-    const existingProducts = await Product.find({ name: { $in: productsWithBrand.map(p => p.name) } });
-    const existingProductNames = existingProducts.map(p => p.name);
+    const existing = await Product.find({ name: { $in: productsWithBrand.map(p => p.name) } });
+    const existingNames = existing.map(p => p.name);
+    const toInsert = productsWithBrand.filter(p => !existingNames.includes(p.name));
 
-    const productsToInsert = productsWithBrand.filter(p => !existingProductNames.includes(p.name));
-
-    if (productsToInsert.length > 0) {
-      await Product.insertMany(productsToInsert);
-      console.log("✅ New products inserted successfully!");
+    if (toInsert.length > 0) {
+      await Product.insertMany(toInsert);
+      console.log(`✅ Inserted ${toInsert.length} new products!`);
     } else {
       console.log("✅ No new products to insert!");
     }
-
-    mongoose.connection.close();
-    process.exit(0); // Graceful exit after seeding
   } catch (error) {
     console.error("❌ Seeding Error:", error);
-    mongoose.connection.close();
-    process.exit(1); // Exit with error
+  } finally {
+    await mongoose.connection.close();
+    process.exit(0);
   }
 };
 

@@ -1,29 +1,58 @@
+// app/page.js
+
 "use client";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/authContext";
+
 import ImageSlider from "@/components/ImageSlider";
-import CategorySlider from "@/components/CategorySlider";
+import Hero from "@components/Hero";
 import Features from "@/components/Features";
 import ContactSection from "@/components/ContactSection";
+import ClarityCraftSection from "@components/ClarityCraftSection";
 
 export default function Home() {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && user) {
+      if (user.role === "admin") {
+        router.replace("/admin");
+      } else if (user.role === "superadmin") {
+        router.replace("/superadmin");
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, loading]);
+
+
+  // Prevent flicker while auth is loading
+  if (loading) return null;
+
   return (
-    <div className="relative">
-      {/* ✅ Hero Section (Slider) */}
-      <section className="relative flex flex-col items-center justify-center pt-16 space-y-10">
+    <div className="relative ">
+      <section className="relative z-10">
         <ImageSlider />
       </section>
 
-      {/* ✅ Category Sliders (Bigger size) */}
-      <section className="mt-10 space-y-16">
-        <CategorySlider category="Sunglasses" />
-        <CategorySlider category="Eyeglasses" />
-        <CategorySlider category="ContactLenses" />
+      <section className="relative z-10">
+        <Hero />
       </section>
 
+      <section className="relative z-10">
+        <ClarityCraftSection />
+      </section>
+      
       {/* ✅ Features Section */}
-      <Features />
+      <section className="relative z-10">
+        <Features />
+      </section>
 
       {/* ✅ Contact Section */}
-      <ContactSection />
+      <section className="relative z-10">
+        <ContactSection />
+      </section>
     </div>
   );
 }

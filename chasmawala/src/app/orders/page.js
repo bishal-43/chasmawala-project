@@ -1,3 +1,5 @@
+//src/app/orders/page.js
+/*
 "use client";
 import { useEffect, useState } from "react";
 
@@ -59,6 +61,79 @@ export default function OrdersPage() {
             </div>
           </div>
         ))}
+      </div>
+    </div>
+  );
+}
+*/
+
+
+// src/app/orders/page.js
+
+"use client";
+
+import { useEffect, useState } from "react";
+import OrderCard from "./components/OrderCard";
+import OrderSkeleton from "./components/OrderSkeleton";
+import EmptyState from "./components/EmptyState";
+
+export default function OrdersPage() {
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const res = await fetch("/api/orders", { credentials: "include" });
+        if (!res.ok) {
+          throw new Error(`Failed to fetch orders: ${res.statusText}`);
+        }
+        const data = await res.json();
+        // Sort orders by most recent first
+        const sortedOrders = data.orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        setOrders(sortedOrders);
+      } catch (err) {
+        console.error("❌ Error fetching orders:", err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchOrders();
+  }, []);
+
+  const renderContent = () => {
+    if (loading) {
+      // Show 3 skeleton cards while loading
+      return Array.from({ length: 3 }).map((_, i) => <OrderSkeleton key={i} />);
+    }
+
+    if (error) {
+      return <p className="text-center text-red-500 mt-10">Error: {error}</p>;
+    }
+    
+    if (orders.length === 0) {
+      return <EmptyState />;
+    }
+
+    return orders.map((order) => <OrderCard key={order._id} order={order} />);
+  };
+
+  return (
+    <div className="bg-gray-50 min-h-screen">
+      <div className="container mx-auto max-w-4xl p-4 sm:p-6 lg:p-8">
+        <header className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
+            Order History
+          </h1>
+          <p className="mt-1 text-gray-500">
+            Check the status of your recent orders.
+          </p>
+        </header>
+        <main className="space-y-6">
+          {renderContent()}
+        </main>
       </div>
     </div>
   );

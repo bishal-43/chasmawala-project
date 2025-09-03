@@ -5,10 +5,11 @@ import SuperAdminDashboard from "./SuperAdminDashboard";
 import { verifySuperAdminToken } from "@/lib/auth";
 
 export default async function SuperAdminPage() {
-  const token = cookies().get("admin-token")?.value;
-  const isSuperAdmin = await verifySuperAdminToken(token);
+  const token = cookies().get("auth-token")?.value;
 
-  if (!isSuperAdmin) redirect("/admin/login");
+  if (!token || !(await verifySuperAdminToken(token))) {
+    redirect("/admin/login");
+  }
 
   return <SuperAdminDashboard />;
 }

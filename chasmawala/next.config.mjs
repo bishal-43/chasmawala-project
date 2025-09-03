@@ -1,3 +1,4 @@
+// chasmawala/next.config.mjs
 /** @type {import('next').NextConfig} */
 import path from 'path';
 
@@ -10,10 +11,14 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
+        hostname: 'placehold.co',
+      },
+      {
+        protocol: 'https',
         hostname: 'res.cloudinary.com',
-        pathname: '/**', // allow all images under this domain
       },
     ],
+    domains: ["images.unsplash.com"],
   },
   
   webpack: (config) => {

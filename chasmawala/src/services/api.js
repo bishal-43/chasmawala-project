@@ -1,8 +1,8 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
 export const signup = async (userData) => {
   try {
-    const response = await fetch(`${API_URL}/api/auth/signup`, {
+    const response = await fetch(`/api/auth/signup`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(userData),
@@ -18,9 +18,9 @@ export const signup = async (userData) => {
 
 export const login = async (credentials) => {
   try {
-    console.log("🔍 Login API Request:", `${API_URL}/api/auth/login`);  // ✅ Log API URL
+    console.log("🔍 Login API Request:", `/api/auth/login`);  // ✅ Log API URL
 
-    const response = await fetch(`${API_URL}/api/auth/login`, {
+    const response = await fetch(`/api/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(credentials),

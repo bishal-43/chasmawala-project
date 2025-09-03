@@ -1,3 +1,5 @@
+// app/account/profile/page.js
+
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -44,6 +46,7 @@ export default function ProfilePage() {
 
       if (res.ok) {
         console.log("✅ Logout successful");
+        
         window.location.href = "/";
       } else {
         console.error("❌ Logout failed");

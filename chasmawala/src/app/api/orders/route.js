@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import { connectDB } from "@/config/db";
-import Order from "@/models/order";
+import Order from "@models/orderModel";
 import User from "@/models/userModel";
 
 const JWT_SECRET = process.env.JWT_SECRET ;
@@ -10,7 +10,7 @@ const JWT_SECRET = process.env.JWT_SECRET ;
 export async function GET(req) {
   await connectDB();
 
-  const token = req.cookies.get("token")?.value;
+  const token = req.cookies.get("auth-token")?.value;
   if (!token) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

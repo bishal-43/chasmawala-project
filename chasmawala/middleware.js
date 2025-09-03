@@ -1,61 +1,68 @@
+// chasmawala/middleware.js
 import { NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 
 const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 
 export async function middleware(req) {
-  const { pathname, origin } = req.nextUrl;
-
+  const { pathname } = req.nextUrl;
+  const token = req.cookies.get("auth-token")?.value;
 
   const isSuperAdminPath = pathname.startsWith("/superadmin");
-  const isAdminPath = pathname.startsWith("/admin") && pathname !== "/admin/login";
   const isAdminLoginPage = pathname === "/admin/login";
+  const isAdminPath = pathname.startsWith("/admin") && !isAdminLoginPage;
 
-  const token = req.cookies.get("admin-token")?.value;
-
-  // ✅ Allow access to admin login page if not logged in
+  // ✅ Allow login page without middleware interference
   if (isAdminLoginPage) {
-    if (token) {
-      try {
-        const decoded = await jwtVerify(token, secret);
-        if (decoded.payload.role === "admin" || decoded.payload.role === "superadmin") {
-          return NextResponse.redirect(new URL("/admin", req.url));
-        }
-      } catch (err) {
-        // Token invalid — allow to proceed to login
+    return NextResponse.next();
+  }
+
+  // ✅ Superadmin route protection
+  if (isSuperAdminPath) {
+    if (!token) return NextResponse.redirect(new URL("/admin/login", req.url));
+
+    try {
+      const decoded = await jwtVerify(token, secret);
+      if (decoded.payload.role !== "superadmin") {
+        return NextResponse.redirect(new URL("/unauthorized", req.url));
       }
+    } catch {
+      // Clear invalid cookie
+      const res = NextResponse.redirect(new URL("/admin/login", req.url));
+      res.cookies.delete("auth-token");
+      return res;
     }
     return NextResponse.next();
   }
 
-  if (isSuperAdminPath){
-    if (!token){
-      return NextResponse.redirect(new URL("/admin/login", req.url));
-    }
-    try{
-      const decoded = await jwtVerify(token, secret);
-      if (decoded.payload.role !== "superadmin"){
-        return NextResponse.redirect(new URL("/Unauthorized",req.url));
-      }
-    }catch(err){
-      return NextResponse.redirect(new URL("/admin/login",req.url));
-    }
-  }
-
-  // ✅ Protect all other admin routes
+  // ✅ Admin route protection
   if (isAdminPath) {
-    if (!token) {
-      return NextResponse.redirect(new URL("/admin/login", req.url));
-    }
+    if (!token) return NextResponse.redirect(new URL("/admin/login", req.url));
 
     try {
       const decoded = await jwtVerify(token, secret);
-      if (decoded.payload.role !== "admin" && decoded.payload.role !== "superadmin") {
+      if (!["admin", "superadmin"].includes(decoded.payload.role)) {
         return NextResponse.redirect(new URL("/unauthorized", req.url));
       }
-      return NextResponse.next();
-    } catch (err) {
-      return NextResponse.redirect(new URL("/admin/login", req.url));
+    } catch {
+      // Clear invalid cookie
+      const res = NextResponse.redirect(new URL("/admin/login", req.url));
+      res.cookies.delete("auth-token");
+      return res;
+    }
+    return NextResponse.next();
+  }
+
+  // ✅ Customer routes (profile/checkout)
+  if (["/profile", "/checkout"].includes(pathname)) {
+    if (!token) return NextResponse.redirect(new URL("/login", req.url));
+
+    try {
+      await jwtVerify(token, secret);
+    } catch {
+      const res = NextResponse.redirect(new URL("/login", req.url));
+      res.cookies.delete("auth-token");
+      return res;
     }
   }
 
@@ -63,5 +70,12 @@ export async function middleware(req) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/admin", "/admin/login", "/profile", "/checkout"],
+  matcher: [
+    "/admin/:path*",
+    "/admin",        // ✅ Removed /admin/login
+    "/superadmin/:path*",
+    "/superadmin",
+    "/profile",
+    "/checkout",
+  ],
 };

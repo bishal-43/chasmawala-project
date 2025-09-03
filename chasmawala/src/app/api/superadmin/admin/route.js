@@ -1,35 +1,54 @@
-// app/api/superadmin/admin
-import { connectDB } from "@config/db";
-import { forbidden } from "next/navigation";
+// src/app/api/superadmin/admin/route.js
+
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import User from "@models/userModel";
-import jwt from "jsonwebtoken";
+import { withSuperadminAuth } from "@/lib/api/withSuperAdminAuth"; // Use the HOF
+import { addAdminSchema } from "@/lib/validators/admin"; // Import the Zod schema
+import User from "@/models/userModel";
+import bcrypt from "bcryptjs";
 
+// ✅ GET: Fetch all admins (Now protected by the middleware)
+const getAdminsHandler = async () => {
+  const admins = await User.find({ role: "admin" }).select("-password");
+  return NextResponse.json({ admins });
+};
 
+// ✅ POST: Add new admin (Now protected and validated)
+const addAdminHandler = async (req) => {
+  try {
+    const body = await req.json();
 
-export async function GET(req){
-    try{
-        await connectDB();
-        const cookieStore = cookies(); 
-        const token = cookieStore.get("admin-token")?.value;
+    // 1. Server-side validation using our Zod schema
+    const { name, email, password } = addAdminSchema.parse(body);
 
-        console.log("🍪 Cookies:", cookieStore.getAll());
-        console.log("📦 Token received:", token);
-
-        if(!token) return NextResponse.json({error:"Unauthorized"},{ status: 401});
-
-        const decoded = jwt.verify(token, process.env.JWT_SECRET)
-        if (decoded.role !== "superadmin"){
-            return NextResponse.json({error: "forbidden"},{ status: 403});
-
-        }
-
-        const admins = await User.find({role:"admin"}).select("-password");
-        return NextResponse.json({admins},{status:200})
+    // 2. Check if user already exists
+    const existing = await User.findOne({ email });
+    if (existing) {
+      return NextResponse.json({ error: "An admin with this email already exists." }, { status: 409 }); // 409 Conflict is more specific
     }
-    catch(err){
-        console.error("❌ Full server error:", err);
-        return NextResponse.json({error:err.message},{status:500})
+
+    // 3. Hash password and create user
+    
+    const newAdmin = await User.create({
+      name,
+      email,
+      password,
+      role: "admin",
+    });
+
+    // 4. Return success response (don't send back the password)
+    const adminResponse = { id: newAdmin._id, name: newAdmin.name, email: newAdmin.email };
+    return NextResponse.json({ message: "Admin created successfully.", admin: adminResponse }, { status: 201 });
+
+  } catch (error) {
+    // Zod will throw an error if validation fails
+    if (error instanceof require('zod').ZodError) {
+      return NextResponse.json({ error: error.errors[0].message }, { status: 400 });
     }
-}
+    // Handle other potential errors
+    return NextResponse.json({ error: "An unexpected error occurred." }, { status: 500 });
+  }
+};
+
+// Export the wrapped handlers
+export const GET = withSuperadminAuth(getAdminsHandler);
+export const POST = withSuperadminAuth(addAdminHandler);

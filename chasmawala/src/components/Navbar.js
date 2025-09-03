@@ -3,209 +3,318 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Menu, X, ShoppingCart, Heart, User, UserCircle } from "lucide-react";
+import { Menu, X, ShoppingCart, Heart, User, Search } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useAuth } from "@/contexts/authContext";
-import LoginForm from "./LoginForm";
-import SignupForm from "./SignupForm";
+import ThemeToggle from "@/components/ThemeToggle";
 
+// Main Navbar Component
 const Navbar = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
-  
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const [isSignup, setIsSignup] = useState(false);
-  const { user, setUser,logout } = useAuth();
+    const [isScrolled, setIsScrolled] = useState(false);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    // REMOVED: State for modal is no longer needed
+    // const [showAuthModal, setShowAuthModal] = useState(false);
+    // const [isSignup, setIsSignup] = useState(false);
+    const { user, logout } = useAuth();
+    const [isClient, setIsClient] = useState(false);
 
+    useEffect(() => {
+        setIsClient(true); // ensure client-side render
+    }, []);
 
-  const dropdownRef = useRef(null);
-  const pathname = usePathname();
-  const router = useRouter();
+    // Close mobile menu on route change
+    const pathname = usePathname();
+    useEffect(() => {
+        setIsMenuOpen(false);
+    }, [pathname]);
 
-  const cartContext = useCart();
-  const wishlistContext = useWishlist();
-  const cart = cartContext?.cart || [];
-  const wishlistItems = wishlistContext?.wishlistItems || [];
+    // Handle scroll effect
+    useEffect(() => {
+        const handleScroll = () => setIsScrolled(window.scrollY > 20);
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
 
-  useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 10);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    const navClass = isScrolled
+        ? "bg-white/90 backdrop-blur-lg shadow-md"
+        : "bg-white";
 
-  useEffect(() => {
-    const fetchAuthStatus = async () => {
-      try {
-        const token = localStorage.getItem("authToken"); // Retrieve token from localStorage
-        console.log("Retrieved Token:", token);
+    return (
+        <>
+            <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${navClass}`}>
+                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex items-center justify-between h-20">
+                        {/* Logo */}
+                        <Link href="/" className="text-2xl font-bold text-gray-800 hover:text-emerald-600 transition-colors">
+                            Chasmawala
+                        </Link>
 
-        if (!token) {
-          setUser(null); // No token means user is not authenticated
-          return;
-        }
+                        {/* Desktop Navigation */}
+                        <DesktopNav />
 
-        const res = await fetch("http://localhost:5000/api/auth/check-auth", {
-          method: "GET",
-          headers: {
-            "Authorization": `Bearer ${token}`, // Send token in Authorization header
-            "Accept": "application/json",
-          },
-        });
-
-        if (!res.ok) {
-          setUser(null); // Invalid response, reset user state
-          return;
-        }
-
-        const data = await res.json();
-        setUser(data.user || null); // Set user data if available
-      } catch (error) {
-        console.error("Error fetching auth status:", error);
-        setUser(null); // Reset user state in case of error
-      }
-    };
-    fetchAuthStatus();
-  }, []);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsDropdownOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const handleLogout = async () => {
-    try {
-      await fetch("http://localhost:5000/api/auth/logout", {
-        method: "POST",
-        credentials: "include",
-      });
-
-      setUser(null);
-      router.push("/");
-    } catch (error) {
-      console.error("Error logging out:", error);
-    }
-  };
-
-  const navLinks = [
-    { name: "Home", href: "/" },
-    { name: "Collections", href: "/collections" },
-    { name: "Eye Test", href: "/eye-test" },
-    { name: "Contact", href: "/contact" },
-    { name: "Find a Store", href: "/store" },
-  ];
-
-  return (
-    <>
-      <nav
-        className={`fixed top-0 left-0 right-0 z-50 py-4 px-6 md:px-12 flex items-center justify-between shadow-md ${isScrolled ? "bg-white/80 backdrop-blur-md" : "bg-white"}`}
-      >
-        <Link href="/" className="text-xl font-bold">
-          Chasmawala
-        </Link>
-
-        <div className="hidden md:flex items-center space-x-6">
-          {navLinks.map((link) => (
-            <Link
-              key={link.name}
-              href={link.href}
-              className={`text-sm font-medium hover:text-blue-600 transition-colors ${pathname === link.href ? "text-blue-600 font-bold" : ""}`}
-            >
-              {link.name}
-            </Link>
-          ))}
-        </div>
-
-        <div className="flex items-center space-x-4">
-          <Link href="/wishlist" className="relative">
-            <Heart size={20} />
-            {wishlistItems.length > 0 && (
-              <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-2">
-                {wishlistItems.length}
-              </span>
-            )}
-          </Link>
-
-          <Link href="/cart" className="relative">
-            <ShoppingCart size={20} />
-            {cart.length > 0 && (
-              <span className="absolute top-0 right-0 bg-blue-500 text-white text-xs rounded-full px-2">
-                {cart.length}
-              </span>
-            )}
-          </Link>
-
-          {user ? (
-            <div
-              ref={dropdownRef}
-              onMouseEnter={() => setIsDropdownOpen(true)}
-              onMouseLeave={() => setIsDropdownOpen(false)}
-            >
-              <button className="p-2">
-                <User size={20} />
-              </button>
-              {isDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white border shadow-md rounded-lg">
-                  <Link href="/account/profile" className="block px-4 py-2 hover:bg-gray-100">
-                    Profile
-                  </Link>
-                  <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100">
-                    Logout
-                  </button>
+                        {/* Action Icons & Auth */}
+                        <div className="flex items-center space-x-4">
+                            {/* CHANGED: Removed setShowAuthModal prop */}
+                            <ActionIcons user={user} logout={logout} />
+                            <div className="lg:hidden">
+                                <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-gray-600 hover:text-emerald-600">
+                                    {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              )}
-            </div>
-          ) : (
-            <button
-              onClick={() => setShowAuthModal(true)}
-              className="text-sm font-medium hover:text-blue-600"
-            >
-              Login
-            </button>
-          )}
-        </div>
-      </nav>
+                {/* Mobile Navigation */}
+                {/* ADDED: Pass user and logout to MobileNav for conditional rendering */}
+                <MobileNav isOpen={isMenuOpen} user={user} logout={logout} />
+            </header>
 
-      {showAuthModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-            {isSignup ? (
-              <SignupForm
-              setShowAuthModal={() => setShowAuthModal(false)}
-                setIsSignup={setIsSignup}
-              />
-            ) : (
-              <LoginForm
-              setShowAuthModal={() => setShowAuthModal(false)}
-                setIsSignup={setIsSignup}
-              />
-            )}
+            {/* REMOVED: AuthModal is no longer rendered here */}
 
-            <p
-              className="mt-2 text-sm text-center cursor-pointer text-blue-600"
-              onClick={() => setIsSignup(!isSignup)}
-            >
-              {isSignup
-                ? "Already have an account? Login"
-                : "Don't have an account? Sign Up"}
-            </p>
-
-            <button
-              className="w-full mt-2 text-gray-500"
-              onClick={() => setShowAuthModal(false)}
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
-    </>
-  );
+            <div className="h-20" /> {/* Spacer */}
+        </>
+    );
 };
+
+// Desktop Navigation Links with Mega Menu (No changes needed here)
+const DesktopNav = () => {
+    // ... (Your existing DesktopNav code remains the same)
+    const navLinks = [
+        { name: "Home", href: "/" },
+        { name: "Collections", href: "/collections" },
+        { name: "Eye Test", href: "/eye-test" },
+        { name: "Contact", href: "/contact" },
+    ];
+
+    return (
+        <nav className="hidden lg:flex items-center space-x-8">
+            {navLinks.map((link) => (
+                <div key={link.name} className="group relative">
+                    <Link href={link.href} className="text-base font-medium text-gray-600 hover:text-emerald-600 transition-colors py-6">
+                        {link.name}
+                    </Link>
+                    {/* {link.megaMenu && <MegaMenu />} */}
+                </div>
+            ))}
+        </nav>
+    );
+};
+
+// Mega Menu for Collections (No changes needed here)
+/*const MegaMenu = () => (
+    // ... (Your existing MegaMenu code remains the same)
+    <div className="absolute top-full left-1/2 -translate-x-1/2 w-auto opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all duration-300 pt-4">
+        <div className="bg-white shadow-2xl rounded-lg overflow-hidden flex">
+            <div className="p-8 grid grid-cols-3 gap-x-12">
+                {renderMenuColumn("For Men", ["Eyeglasses", "Sunglasses", "New Arrivals","Contact Lenses"], "category")}
+                {renderMenuColumn("For Women", ["Eyeglasses", "Sunglasses", "Contact Lenses"], "category")}
+                {renderMenuColumn("Our Brands", ["Ray-Ban", "Oakley", "Vincent Chase"], "brand")}
+            </div>
+            <div className="w-64 bg-gray-100">
+                <img src="https://placehold.co/256x320/a7f3d0/1e40af?text=New+Collection" alt="New Collection" className="w-full h-full object-cover" />
+            </div>
+        </div>
+    </div>
+);*/
+
+/*const renderMenuColumn = (title, items, type = "category") => (
+    // ... (Your existing renderMenuColumn code remains the same)
+    <div key={title}>
+        <h3 className="font-bold text-gray-800 mb-4">{title}</h3>
+        <ul className="space-y-3">
+            {items.map(item => (
+                <li key={item}>
+                    <Link
+                        href={`/collections/${item.toLowerCase().replace(/\s+/g, "-")}`}
+                        className="text-gray-500 hover:text-emerald-600 transition-colors text-sm"
+                    >
+                        {item}
+                    </Link>
+                </li>
+            ))}
+        </ul>
+    </div>
+);*/
+
+// Action Icons (Search, Wishlist, Cart) and User Auth
+// CHANGED: Removed setShowAuthModal from props
+const ActionIcons = ({ user, logout }) => {
+    const { cart } = useCart() || { cart: [] };
+    const { wishlistItems } = useWishlist() || { wishlistItems: [] };
+    const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+    const dropdownRef = useRef(null);
+
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+    const router = useRouter();
+    const searchInputRef = useRef(null);
+
+    useEffect(() => {
+        if (isSearchOpen) {
+            searchInputRef.current?.focus();
+        }
+    }, [isSearchOpen]);
+
+    const handleSearchSubmit = (e) => {
+        e.preventDefault();
+        if (searchQuery.trim()) {
+            // Navigate to the search results page
+            router.push(`/search?query=${encodeURIComponent(searchQuery.trim())}`);
+            setIsSearchOpen(false); // Close the search bar after searching
+            setSearchQuery("");   // Clear the input
+        }
+    };
+
+    // Close dropdown on click outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsUserDropdownOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    return (
+        <div className="flex items-center space-x-4">
+            <div className="hidden sm:flex items-center">
+                {isSearchOpen ? (
+                    <form onSubmit={handleSearchSubmit} className="relative">
+                        <input
+                            ref={searchInputRef}
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            onBlur={() => { if (!searchQuery) setIsSearchOpen(false) }} // Hide if empty and loses focus
+                            placeholder="Search glasses..."
+                            className="w-48 h-10 pl-4 pr-10 text-sm border rounded-full focus:outline-none focus:ring-2 focus:ring-emerald-400 transition-all duration-300"
+                        />
+                        <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-emerald-600">
+                            <Search size={20} />
+                        </button>
+                    </form>
+                ) : (
+                    <button onClick={() => setIsSearchOpen(true)} className="text-gray-600 hover:text-emerald-600">
+                        <Search size={22} />
+                    </button>
+                )}
+            </div>
+            <Link href="/wishlist" className="relative text-gray-600 hover:text-emerald-600">
+                <Heart size={22} />
+                {wishlistItems.length > 0 && <Badge count={wishlistItems.length} />}
+            </Link>
+            <Link href="/cart" className="relative text-gray-600 hover:text-emerald-600">
+                <ShoppingCart size={22} />
+                {cart.length > 0 && <Badge count={cart.length} />}
+            </Link>
+
+            <div className="relative" ref={dropdownRef}>
+                {user ? (
+                    <>
+                        <button onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)} className="text-gray-600 hover:text-emerald-600">
+                            <User size={22} />
+                        </button>
+                        <UserDropdown isOpen={isUserDropdownOpen} user={user} logout={logout} />
+                    </>
+                ) : (
+                    // CHANGED: Button is now a Link pointing to the login page
+                    <Link href="/account/login" className="hidden lg:inline-block bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-emerald-600 transition-colors">
+                        Login
+                    </Link>
+                )}
+            </div>
+        </div>
+    );
+};
+
+// Badge for Cart/Wishlist Count (No changes needed here)
+const Badge = ({ count }) => (
+    <span className="absolute -top-2 -right-2 bg-emerald-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">
+        {count}
+    </span>
+);
+
+// User Dropdown Menu (No changes needed here)
+const UserDropdown = ({ isOpen, user, logout }) => {
+    // ... (Your existing UserDropdown code remains the same)
+    const router = useRouter();
+    const handleLogout = async () => {
+        await logout();
+        router.push('/');
+    };
+    if (!isOpen) return null;
+    return (
+        <div className="absolute top-full right-0 mt-4 w-56 bg-white rounded-lg shadow-2xl border border-gray-100">
+            <div className="p-4 border-b">
+                <p className="font-semibold text-gray-800">{user.name}</p>
+                <p className="text-xs text-gray-500">{user.email}</p>
+            </div>
+            <div className="py-2">
+                <Link href="/account/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-emerald-600">My Profile</Link>
+                <Link href="/orders" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-emerald-600">My Orders</Link>
+            </div>
+            <div className="p-2">
+                <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md">
+                    Logout
+                </button>
+            </div>
+        </div>
+    );
+};
+
+// Mobile Navigation Panel
+// CHANGED: Now accepts user and logout props to show correct auth links
+const MobileNav = ({ isOpen, user, logout }) => {
+    const router = useRouter();
+    const navLinks = [
+        { name: "Home", href: "/" },
+        { name: "Collections", href: "/collections" },
+        { name: "Eye Test", href: "/eye-test" },
+        { name: "Contact", href: "/contact" },
+    ];
+
+    const handleLogout = async () => {
+        await logout();
+        router.push('/');
+    };
+
+    return (
+        <div className={`lg:hidden absolute top-full left-0 w-full bg-white shadow-lg transition-transform duration-300 ease-in-out ${isOpen ? 'translate-y-0' : '-translate-y-[120%]'}`}>
+            <nav className="flex flex-col p-4 space-y-2">
+                {navLinks.map((link) => (
+                    <Link key={link.name} href={link.href} className="text-gray-700 hover:bg-gray-100 hover:text-emerald-600 p-3 rounded-md font-medium">
+                        {link.name}
+                    </Link>
+                ))}
+                {/* CHANGED: Conditionally render auth links */}
+                <div className="border-t pt-4 mt-2 space-y-2">
+                    {user ? (
+                        <>
+                            <Link href="/account/profile" className="flex items-center text-gray-700 hover:bg-gray-100 hover:text-emerald-600 p-3 rounded-md font-medium">
+                                <User className="mr-3" size={20} /> My Account
+                            </Link>
+                            <button onClick={handleLogout} className="w-full flex items-center text-red-600 hover:bg-red-50 p-3 rounded-md font-medium">
+                                Logout
+                            </button>
+                        </>
+                    ) : (
+                        <Link href="/account/login" className="flex items-center justify-center bg-emerald-500 text-white hover:bg-emerald-600 p-3 rounded-md font-semibold">
+                            Login / Signup
+                        </Link>
+                    )}
+                </div>
+            </nav>
+            {/* You can remove this second nav or adjust it as needed */}
+            <div className="flex items-center justify-between px-4 py-2 border-t">
+                <ThemeToggle />
+            </div>
+        </div>
+    );
+};
+
+
+// REMOVED: The AuthModal component is no longer needed in this file.
 
 export default Navbar;

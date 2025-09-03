@@ -1,38 +1,24 @@
+// src/app/api/products/route.js
+
 import { NextResponse } from 'next/server';
 import { connectDB } from '@/config/db';
 import Product from '@/models/productModel';
-import { writeFile } from 'fs/promises';
 import { verifyAdminToken } from '@/lib/auth';
-import path from 'path';
-import { v4 as uuidv4 } from 'uuid';
-import { IncomingForm } from 'formidable';
-import fs from 'fs';
+import { v2 as cloudinary } from 'cloudinary';
+import slugify from 'slugify';
 
-// Disable default body parsing
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
-
-// Helper to parse form-data using formidable (works in Edge Runtime too)
-function parseForm(req) {
-  return new Promise((resolve, reject) => {
-    const form = new IncomingForm({ multiples: false, uploadDir: '/tmp', keepExtensions: true });
-
-    form.parse(req, (err, fields, files) => {
-      if (err) return reject(err);
-      resolve({ fields, files });
-    });
-  });
-}
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 export async function POST(req) {
   await connectDB();
 
-  // Extract the token manually from cookies
+  // ✅ 1. Verify token from cookie
   const cookieHeader = req.headers.get('cookie');
-  const token = cookieHeader?.split(';').find(c => c.trim().startsWith('admin-token='))?.split('=')[1];
+  const token = cookieHeader?.split(';').find(c => c.trim().startsWith('auth-token='))?.split('=')[1];
 
   const isAdmin = await verifyAdminToken(token);
   if (!isAdmin) {
@@ -40,39 +26,103 @@ export async function POST(req) {
   }
 
   try {
-    const { fields, files } = await parseForm(req);
+    // ✅ 2. Parse multipart form-data
+    const formData = await req.formData();
+    const file = formData.get("image");
 
-    const { name, description, price, category } = fields;
-    let imagePath = '';
+    let imageUrl = "";
+    if (file) {
+      const bytes = await file.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      const base64 = `data:${file.type};base64,${buffer.toString("base64")}`;
 
-    if (files.image) {
-      const tempPath = files.image.filepath || files.image.path;
-      const fileExt = path.extname(files.image.originalFilename);
-      const newFileName = uuidv4() + fileExt;
-      const newFilePath = path.join(process.cwd(), 'public', 'uploads', newFileName);
+      const uploadResponse = await cloudinary.uploader.upload(base64, {
+        folder: "chasmawala_products",
+      });
 
-      await fs.promises.copyFile(tempPath, newFilePath);
-      imagePath = '/uploads/' + newFileName;
+      imageUrl = uploadResponse.secure_url;
     }
 
+    // ✅ 3. Save product
     const product = new Product({
-      name,
-      description,
-      price,
-      category,
-      image: imagePath,
+      name: formData.get("name"),
+      description: formData.get("description"),
+      price: formData.get("price"),
+      category: formData.get("category"),
+      image: imageUrl,
+      slug: slugify(formData.get("name"), { lower: true, strict: true })
     });
 
     const saved = await product.save();
     return NextResponse.json({ message: 'Product uploaded successfully', product: saved }, { status: 201 });
+
   } catch (err) {
     console.error('❌ Upload error:', err);
     return NextResponse.json({ error: 'Failed to upload product' }, { status: 500 });
   }
 }
 
-export async function GET() {
+
+
+export async function GET(req) {
   await connectDB();
-  const products = await Product.find();
-  return NextResponse.json(products);
+
+  const { searchParams } = new URL(req.url);
+
+  const categories = searchParams.getAll("category");
+  const brands = searchParams.getAll("brand");
+  const frameShapes = searchParams.getAll("frameShape");
+  const maxPrice = searchParams.get("maxPrice");
+  const slug = searchParams.get("slug");
+
+  // Build query
+  const query = {};
+
+  if (slug) {
+    // Convert slug (contact-lenses -> contact lenses)
+    const formatted = slug.replace(/-/g, " ");
+    const slugRegex = new RegExp(`^${formatted}$`, "i");
+
+    query.$or = [
+      { category: slugRegex }, // match category
+      { brand: slugRegex },    // match brand
+    ];
+  } else {
+    // Normal filtering logic
+    if (categories.length > 0 && !categories.includes("new-arrivals")) {
+      query.category = { $in: categories };
+    }
+    if (brands.length > 0) {
+      query.brand = { $in: brands };
+    }
+    if (frameShapes.length > 0) {
+      query.frameShape = { $in: frameShapes };
+    }
+    if (maxPrice) {
+      query.price = { $lte: Number(maxPrice) };
+    }
+  }
+
+  try {
+    let products;
+
+    if (!slug && categories.includes("new-arrivals")) {
+      // Special case: new arrivals
+      products = await Product.find({})
+        .sort({ createdAt: -1 })
+        .limit(10)
+        .select('name price image category brand slug');
+    } else {
+      products = await Product.find(query)
+      .select('name price image category brand slug');
+    }
+
+    return NextResponse.json(products);
+  } catch (err) {
+    console.error("❌ Products fetch error:", err);
+    return NextResponse.json(
+      { error: "Failed to fetch products" },
+      { status: 500 }
+    );
+  }
 }

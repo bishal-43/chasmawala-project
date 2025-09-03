@@ -1,89 +1,92 @@
-"use client";
-import { useState, useEffect } from "react";
-import ProductCard from "@/components/ProductCard";
+// app/products/page.js 
+/*"use client";
 
-const ProductsPage = () => {
+import { useEffect, useState } from "react";
+import ProductFilter from "@/components/ProductFilter";
+
+export default function ProductsPage() {
   const [products, setProducts] = useState([]);
-  const [category, setCategory] = useState("");
-  const [brand, setBrand] = useState("");
-  const [minPrice, setMinPrice] = useState("");
-  const [maxPrice, setMaxPrice] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
+  // ✅ Fetch products from MongoDB via API
   useEffect(() => {
-    const delayDebounce = setTimeout(() => {
-      fetchProducts();
-    }, 400); // delay to wait for user input to settle
-  
-    return () => clearTimeout(delayDebounce);
-  }, [category, brand, minPrice, maxPrice]);
-  
-
   const fetchProducts = async () => {
     setLoading(true);
-    setError("");
-    try {
-      let url = `/api/products?`;
-      if (category) url += `category=${category}&`;
-      if (brand) url += `brand=${brand}&`;
-      if (minPrice) url += `minPrice=${minPrice}&`;
-      if (maxPrice) url += `maxPrice=${maxPrice}&`;
+    const params = new URLSearchParams();
+    activeFilters.categories.forEach(cat => params.append("category", cat));
+    activeFilters.brands.forEach(brand => params.append("brand", brand));
+    activeFilters.frameShapes.forEach(shape => params.append("frameShape", shape));
+    params.append("maxPrice", activeFilters.price);
 
+    const res = await fetch(`/api/products?${params.toString()}`);
+    const data = await res.json();
 
-      const res = await fetch(url);
-      if (!res.ok) throw new Error("Failed to fetch products");
-
-      const data = await res.json();
-      setProducts(data);
-    } catch (error) {
-      console.error("Error fetching products:", error);
-      setError("Unable to load products. Please try again.");
-    }
+    // ✅ API returns an array, so use it directly
+    setProducts(data);
     setLoading(false);
   };
 
+  fetchProducts();
+}, [activeFilters]);
+
+  // ✅ Apply filters
+  const applyFilters = ({ categories, brands, priceRange }) => {
+    let updatedProducts = [...products];
+
+    if (categories.length > 0) {
+      updatedProducts = updatedProducts.filter((p) =>
+        categories.includes(p.category)
+      );
+    }
+
+    if (brands.length > 0) {
+      updatedProducts = updatedProducts.filter((p) =>
+        brands.includes(p.brand)
+      );
+    }
+
+    updatedProducts = updatedProducts.filter(
+      (p) => p.price >= priceRange[0] && p.price <= priceRange[1]
+    );
+
+    setFilteredProducts(updatedProducts);
+  };
+
   return (
-    <div className="container mx-auto p-6">
-      {/* 🔹 Filter Section */}
-      <div className="flex flex-wrap gap-4 mb-6">
-        <select value={category} onChange={(e) => setCategory(e.target.value)} className="p-2 border rounded">
-          <option value="">All Categories</option>
-          <option value="Sunglasses">Sunglasses</option>
-          <option value="Eyeglasses">Eyeglasses</option>
-        </select>
+    <div className="flex min-h-screen">
+      
+      <ProductFilter onApplyFilters={applyFilters} />
 
-        <select value={brand} onChange={(e) => setBrand(e.target.value)} className="p-2 border rounded">
-          <option value="">All Brands</option>
-          <option value="Ray-Ban">Ray-Ban</option>
-          <option value="Oakley">Oakley</option>
-          <option value="Gucci">Gucci</option>
-        </select>
+      
+      <div className="flex-1 p-6">
+        <h1 className="text-3xl font-bold mb-6">Our Products</h1>
 
-        <input type="number" placeholder="Min Price" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} className="p-2 border rounded" />
-        <input type="number" placeholder="Max Price" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} className="p-2 border rounded" />
-
-        <button onClick={fetchProducts} className="bg-blue-600 text-white px-4 py-2 rounded">
-          Apply Filters
-        </button>
+        {loading ? (
+          <p>Loading products...</p>
+        ) : filteredProducts.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {filteredProducts.map((product) => (
+              <div
+                key={product._id}
+                className="border rounded-lg p-4 shadow hover:shadow-lg transition"
+              >
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="w-full h-48 object-cover rounded"
+                />
+                <h2 className="text-lg font-semibold mt-2">{product.name}</h2>
+                <p className="text-gray-600">{product.category}</p>
+                <p className="text-blue-600 font-bold">₹{product.price}</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p>No products found with the applied filters.</p>
+        )}
       </div>
-
-      {/* 🔹 Product Listing */}
-      {loading ? (
-        <p className="text-center">Loading products...</p>
-      ) : error ? (
-        <p className="text-center text-red-500">{error}</p>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {products.length > 0 ? (
-            products.map((product) => <ProductCard key={product._id} product={product} />)
-          ) : (
-            <p className="text-center col-span-3">No products found.</p>
-          )}
-        </div>
-      )}
     </div>
   );
-};
-
-export default ProductsPage;
+}
+*/

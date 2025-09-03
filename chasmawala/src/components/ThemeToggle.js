@@ -1,30 +1,43 @@
-"use client"; // Needed for Next.js client components
+"use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import { useTheme } from "next-themes";
+import { FiSun, FiMoon } from "react-icons/fi"; // Example using react-icons
 
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState("light");
+  const [mounted, setMounted] = useState(false);
+  const { theme, setTheme } = useTheme();
 
+  // useEffect only runs on the client, so we can safely show the UI
   useEffect(() => {
-    // Check stored theme preference
-    const storedTheme = localStorage.getItem("theme") || "light";
-    setTheme(storedTheme);
-    document.documentElement.classList.toggle("dark", storedTheme === "dark");
+    setMounted(true);
   }, []);
 
+  if (!mounted) {
+    // To prevent hydration mismatch, render a placeholder or null on the server.
+    return <div className="w-10 h-10" />; 
+  }
+
   const toggleTheme = () => {
-    const newTheme = theme === "light" ? "dark" : "light";
-    setTheme(newTheme);
-    document.documentElement.classList.toggle("dark", newTheme === "dark");
-    localStorage.setItem("theme", newTheme);
+    setTheme(theme === "light" ? "dark" : "light");
   };
 
   return (
     <button
       onClick={toggleTheme}
-      className="fixed top-4 right-4 p-2 bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-full shadow-md transition"
+      className="p-2 rounded-full transition-colors duration-300 ease-in-out
+                 text-gray-600 dark:text-gray-300
+                 bg-gray-200/50 dark:bg-gray-800/50
+                 hover:bg-gray-300/80 dark:hover:bg-gray-700/80
+                 focus:outline-none focus:ring-2 focus:ring-offset-2 
+                 focus:ring-blue-500 dark:focus:ring-offset-gray-900"
+      aria-label="Toggle theme"
     >
-      {theme === "light" ? "🌙" : "☀️"}
+      {theme === "light" ? (
+        <FiMoon size={22} /> // 🌙
+      ) : (
+        <FiSun size={22} /> // ☀️
+      )}
     </button>
   );
 }

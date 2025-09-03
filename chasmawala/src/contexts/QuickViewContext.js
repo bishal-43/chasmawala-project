@@ -1,29 +1,39 @@
+// src/contexts/QuickViewContext.js
+
 "use client";
 import { createContext, useContext, useState } from "react";
 
-// Create Context
 const QuickViewContext = createContext();
 
-// Provider Component
-export const QuickViewProvider = ({ children }) => {
-  const [quickViewProduct, setQuickViewProduct] = useState(null);
+export function QuickViewProvider({ children }) {
+  // ✅ FIX: Rename state from 'quickViewProduct' to just 'product' for clarity
+  const [product, setProduct] = useState(null);
 
-  const openQuickView = (product) => {
-    setQuickViewProduct(product);
+  // ✅ FIX: Derive isOpen directly from the product state
+  const isOpen = Boolean(product); 
+
+  const openQuickView = (productData) => {
+    setProduct(productData);
   };
 
   const closeQuickView = () => {
-    setQuickViewProduct(null);
+    setProduct(null);
   };
 
+  // ✅ FIX: Provide an object with the names that your modal expects: isOpen and product
+  const value = { isOpen, product, openQuickView, closeQuickView };
+
   return (
-    <QuickViewContext.Provider value={{ quickViewProduct, openQuickView, closeQuickView }}>
+    <QuickViewContext.Provider value={value}>
       {children}
     </QuickViewContext.Provider>
   );
 };
 
-// Custom Hook
-export const useQuickView = () => useContext(QuickViewContext);
-
-export default QuickViewContext;
+export function useQuickView() {
+  const context = useContext(QuickViewContext);
+  if (context === undefined) {
+    throw new Error('useQuickView must be used within a QuickViewProvider');
+  }
+  return context;
+}
