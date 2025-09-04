@@ -1,6 +1,6 @@
 // src/app/api/orders/[id]/route.js
 
-import { connectDB } from "@config/db";
+import { connectDB } from "@/config/db";
 import { NextResponse } from "next/server";
 import Order from "@/models/orderModel";
 import { getUserFromToken } from "@/lib/auth";

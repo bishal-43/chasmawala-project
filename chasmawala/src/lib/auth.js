@@ -4,7 +4,7 @@ import User from "@/models/userModel";
 import { connectDB } from "@/config/db";
 import { cookies } from "next/headers";
 
-async function verifyToken(token, allowedRoles = []) {
+export async function verifyToken(token, allowedRoles = []) {
   try {
     await connectDB();
     const decoded = jwt.verify(token, process.env.JWT_SECRET);

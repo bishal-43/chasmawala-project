@@ -1,12 +1,18 @@
 // src/app/store/page.js
 
+
+
 import { stores } from "@/utils/store-data";
-import StoreDisplay from "./components/StoreLocator";
+import StoreDisplayWrapper from "./components/StoreDisplayWrapper";
 
 export const metadata = {
   title: "Our Store | Chasmawala",
   description: "Visit our flagship store in Ramanand Chowk, Janakpur. Shop our latest eyewear collections in person.",
 };
+
+
+
+
 
 export default function StorePage() {
   return (
@@ -22,7 +28,7 @@ export default function StorePage() {
         </div>
         
         {/* Pass the single store object to the display component */}
-        <StoreDisplay store={stores} />
+        <StoreDisplayWrapper store={stores} />
       </div>
     </div>
   );

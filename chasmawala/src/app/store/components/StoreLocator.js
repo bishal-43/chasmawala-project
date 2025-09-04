@@ -1,4 +1,4 @@
-// src/app/store/_components/StoreDisplay.js
+// src/app/store/_components/StoreLocator.js
 "use client";
 
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
@@ -16,7 +16,7 @@ const defaultIcon = new L.Icon({
     shadowSize: [41, 41]
 });
 
-export default function StoreDisplay({ store }) {
+export default function StoreLocator({ store }) {
   const position = [store.latitude, store.longitude];
 
   return (

@@ -1,7 +1,7 @@
 // src/app/api/admin/products/[slug]/route.js
 
-import { connectDB } from "@config/db";
-import Product from "@models/productModel";
+import { connectDB } from "@/config/db";
+import Product from "@/models/productModel";
 import { NextResponse } from "next/server";
 
 

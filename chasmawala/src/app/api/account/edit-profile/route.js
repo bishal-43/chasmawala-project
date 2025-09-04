@@ -1,7 +1,7 @@
 // src/app/api/account/edit-profile/route.js
 
 import { getUserFromToken } from "@/lib/auth";
-import { connectDB } from "@config/db";
+import { connectDB } from "@/config/db";
 import { NextResponse } from "next/server";
 import User from "@/models/userModel";
 

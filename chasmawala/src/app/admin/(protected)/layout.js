@@ -4,7 +4,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useAuth } from "@contexts/authContext";
+import { useAuth } from "@/contexts/authContext";
 import { useEffect } from "react";
 import Topbar from "./topbar";
 

@@ -1,7 +1,7 @@
 //  api/admin/products/route.js
 
-import { connectDB } from "@config/db";
-import Product from "@models/productModel";
+import { connectDB } from "@/config/db";
+import Product from "@/models/productModel";
 import { NextResponse } from "next/server";
 
 export async function GET(){

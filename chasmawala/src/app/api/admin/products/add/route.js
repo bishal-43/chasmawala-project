@@ -1,18 +1,18 @@
 // src/app/api/admin/products/add/route.js
 
 
-import { connectDB } from "@config/db";
-import Product from "@models/productModel";
-import {Cookies} from "next/headers";
+import { connectDB } from "@/config/db";
+import Product from "@/models/productModel";
+import {cookies} from "next/headers";
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
-import User from "@models/userModel";
+import User from "@/models/userModel";
 
 export async function POST(req){
     await connectDB();
     const body = await req.json();
-    const cookies = await Cookies();
-    const token = cookies.get("admin-token")?.value;
+    const cookies = await cookies();
+    const token = cookies.get("auth-token")?.value;
 
     if(!token) return NextResponse.json({error: "Unauthorized"}, {status: 401});
 

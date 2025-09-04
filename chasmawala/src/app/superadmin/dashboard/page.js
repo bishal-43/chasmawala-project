@@ -8,8 +8,8 @@ import { AddAdminDialog } from "@/components/superadmin/AddAdminDialog";
 import { ConfirmationDialog } from "@/components/ui/confirmationDialog";
 import { DashboardHeader } from "@/components/superadmin/DashboardHeader";
 import { AdminListSkeleton } from "@/components/superadmin/AdminListSkeleton";
-import { Alert } from "@/components/ui/Alert";
-import { useSuperAdminAdmins } from "@/hooks/useSuperAdminAdmins";
+import { Alert } from "@/components/ui/alert";
+import { useSuperAdminAdmins } from "@/hooks/useSuperAdminAdmin";
 
 export default function SuperAdminDashboard() {
   const { admins, isLoading, error, addAdmin, deleteAdmin } = useSuperAdminAdmins();
