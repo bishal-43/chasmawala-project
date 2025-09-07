@@ -1,19 +1,14 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Glasses, ChevronLeft, ChevronRight } from "lucide-react";
-
-// --- Framer Motion for animations ---
 import { motion, AnimatePresence } from "framer-motion";
-
-// --- Swiper for the slider ---
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, EffectFade, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/effect-fade";
-
 
 // --- Data remains the same ---
 const heroSlidesData = [
@@ -49,29 +44,29 @@ const heroSlidesData = [
   },
 ];
 
-// --- Main Hero Component ---
 export default function ImageSlider() {
   const [swiper, setSwiper] = useState(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [progress, setProgress] = useState(0);
 
+  // Keep progress perfectly synced
   useEffect(() => {
     if (!swiper) return;
 
-    const onProgress = (s, p) => {
-      setProgress(p * 100);
+    const handleProgress = (_, timeLeft, totalTime) => {
+      setProgress(((totalTime - timeLeft) / totalTime) * 100);
     };
 
-    swiper.on('autoplayTimeLeft', onProgress);
+    swiper.on("autoplayTimeLeft", handleProgress);
     return () => {
-      swiper.off('autoplayTimeLeft', onProgress);
+      swiper.off("autoplayTimeLeft", handleProgress);
     };
   }, [swiper]);
 
   const activeSlide = heroSlidesData[activeIndex];
 
   return (
-    <section id="home" className="relative h-screen min-h-[700px] w-full text-white">
+    <section id="home" className="relative h-screen w-full overflow-hidden text-white">
       {/* --- Background Swiper --- */}
       <Swiper
         modules={[Autoplay, EffectFade, Navigation]}
@@ -84,29 +79,31 @@ export default function ImageSlider() {
         fadeEffect={{ crossFade: true }}
         autoplay={{ delay: 6000, disableOnInteraction: false }}
         navigation={{
-          nextEl: '.swiper-button-next-custom',
-          prevEl: '.swiper-button-prev-custom',
+          nextEl: ".swiper-button-next-custom",
+          prevEl: ".swiper-button-prev-custom",
         }}
-        className="absolute inset-0 h-full w-full"
+        className="absolute inset-0 h-full w-full z-0"
       >
         {heroSlidesData.map((slide, index) => (
           <SwiperSlide key={slide.id}>
-            <Image
-              src={slide.img}
-              alt={slide.alt}
-              fill
-              style={{ objectFit: "cover" }}
-              priority={index === 0}
-            />
+            <div className="relative w-full h-full">
+              <Image
+                src={slide.img}
+                alt={slide.alt}
+                fill
+                className="object-cover object-center"
+                priority={index === 0}
+              />
+            </div>
           </SwiperSlide>
         ))}
       </Swiper>
 
       {/* --- Gradient Overlay --- */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent"></div>
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent z-10"></div>
 
       {/* --- Content Area --- */}
-      <div className="relative z-10 flex flex-col justify-end h-full p-8 md:p-16 lg:p-24">
+      <div className="relative z-20 flex flex-col justify-end h-full p-6 sm:p-12 md:p-16 lg:p-24">
         <div className="max-w-xl">
           <AnimatePresence mode="wait">
             <motion.div
@@ -128,14 +125,15 @@ export default function ImageSlider() {
             </motion.div>
           </AnimatePresence>
 
+          {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-start gap-4 mt-8">
-            <Link href={activeSlide.cta_primary_link}>
+            <Link href={activeSlide.cta_primary_link} passHref>
               <button className="w-full sm:w-auto flex items-center justify-center px-7 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-lg hover:bg-blue-700 transition-transform duration-300 transform hover:scale-105">
                 {activeSlide.cta_primary_text}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </button>
             </Link>
-            <Link href="/eye-test">
+            <Link href="/eye-test" passHref>
               <button className="w-full sm:w-auto flex items-center justify-center px-7 py-3 bg-transparent text-white font-semibold rounded-lg border-2 border-white/80 hover:bg-white/10 transition-all duration-300">
                 Book an Eye Test
                 <Glasses className="ml-2 h-5 w-5" />
@@ -144,26 +142,28 @@ export default function ImageSlider() {
           </div>
         </div>
 
-        {/* --- Custom Navigation & Progress Bar --- */}
-        <div className="absolute bottom-8 right-8 md:right-16 lg:right-24 bg-black/30 backdrop-blur-md p-2 rounded-xl flex items-center gap-4">
-            <button className="swiper-button-prev-custom p-2 rounded-lg hover:bg-white/20 transition-colors">
-                <ChevronLeft size={24} />
-            </button>
-            <div className="flex items-center gap-3 w-48">
-                <span className="font-semibold text-sm">0{activeIndex + 1}</span>
-                <div className="w-full h-0.5 bg-white/30 rounded-full">
-                    <motion.div 
-                        className="h-full bg-white"
-                        style={{ width: `${progress}%` }}
-                    />
-                </div>
-                <span className="text-sm text-white/50">0{heroSlidesData.length}</span>
-            </div>
-            <button className="swiper-button-next-custom p-2 rounded-lg hover:bg-white/20 transition-colors">
-                <ChevronRight size={24} />
-            </button>
-        </div>
+        {/* --- Navigation & Progress --- */}
+        <div className="absolute bottom-8 right-6 md:right-16 lg:right-24 bg-black/30 backdrop-blur-md p-2 rounded-xl flex items-center gap-4">
+          <button className="swiper-button-prev-custom p-2 rounded-lg hover:bg-white/20 transition-colors">
+            <ChevronLeft size={24} />
+          </button>
 
+          <div className="flex items-center gap-3">
+            <span className="font-semibold text-sm w-6 text-center">0{activeIndex + 1}</span>
+            <div className="w-24 sm:w-32 h-0.5 bg-white/30 rounded-full overflow-hidden">
+              <motion.div
+                className="h-full bg-white"
+                animate={{ width: `${progress}%` }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+              />
+            </div>
+            <span className="text-sm text-white/50 w-6 text-center">0{heroSlidesData.length}</span>
+          </div>
+
+          <button className="swiper-button-next-custom p-2 rounded-lg hover:bg-white/20 transition-colors">
+            <ChevronRight size={24} />
+          </button>
+        </div>
       </div>
     </section>
   );

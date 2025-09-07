@@ -17,14 +17,14 @@ export default function ProductCard({ product }) {
   const { wishlistItems, addToWishlist, removeFromWishlist } = useWishlist();
 
   // Derived state to check if the product is in the wishlist or cart
-  const isInWishlist = wishlistItems.some((item) => item._id === product._id);
-  const isInCart = cartItems?.some((item) => item._id === product._id) || false;
+  const isInWishlist = wishlistItems.some((item) => item.slug === product.slug);
+  const isInCart = cartItems?.some((item) => item.slug === product.slug) || false;
 
   // Handler remains the same: add to cart and remove from wishlist if present
   const handleAddToCart = () => {
     addToCart(product);
     if (isInWishlist) {
-      removeFromWishlist(product._id);
+      removeFromWishlist(product.slug);
     }
   };
 
@@ -33,7 +33,7 @@ export default function ProductCard({ product }) {
     e.preventDefault(); 
     e.stopPropagation();
     if (isInWishlist) {
-        removeFromWishlist(product._id)
+        removeFromWishlist(product.slug)
     } else {
         addToWishlist(product)
     }
@@ -53,7 +53,7 @@ export default function ProductCard({ product }) {
       {/* --- Image and Hover Actions Section --- */}
       <div className="relative aspect-square w-full overflow-hidden">
         {/* Link wraps the image for navigation */}
-        <Link href={`/products/${product._id}`}>
+        <Link href={`/products/${product.slug}`}>
           <Image
             src={product.image || "/images/categories/default-product.jpg"}
             alt={product.name}
@@ -87,7 +87,7 @@ export default function ProductCard({ product }) {
         <p className="text-sm text-gray-500">{product.category}</p>
         <h3 className="text-base font-medium text-gray-900">
           {/* Product name is a separate link for better accessibility */}
-          <Link href={`/products/${product._id}`}>
+          <Link href={`/products/${product.slug}`}>
             <span aria-hidden="true" className="absolute inset-0" />
             {product.name}
           </Link>

@@ -19,7 +19,7 @@ export default function QuickViewModal() {
   const [isAddingToCart, setIsAddingToCart] = useState(false);
 
   // Check if the product is already in the wishlist
-  const isInWishlist = wishlist?.some((item) => item._id === product?._id);
+  const isInWishlist = wishlist?.some((item) => item.slug === product?.slug);
 
   //console.log("--- 3. MODAL STATE ---", { isOpen, product, wishlist });
 
@@ -59,7 +59,7 @@ export default function QuickViewModal() {
   // Handler for toggling wishlist status
   const handleWishlistToggle = () => {
     if (isInWishlist) {
-      removeFromWishlist(product._id);
+      removeFromWishlist(product.slug);
     } else {
       addToWishlist(product);
     }
