@@ -92,7 +92,7 @@ export default function ProductCard({ product }) {
             {product.name}
           </Link>
         </h3>
-        <p className="text-lg font-semibold text-emerald-600">${product.price.toFixed(2)}</p>
+        <p className="text-lg font-semibold text-emerald-600">NRs{product.price.toFixed(2)}</p>
       </div>
 
       {/* --- Add to Cart Button --- */}

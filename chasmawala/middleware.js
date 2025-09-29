@@ -4,77 +4,76 @@ import { jwtVerify } from "jose";
 
 const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 
+/**
+ * A reusable function to verify the token and return its payload.
+ * Encapsulates the try-catch logic.
+ * @param {string | undefined} token The auth token from cookies.
+ * @returns {object | null} The decoded payload or null if invalid.
+ */
+async function verifyToken(token) {
+  if (!token) return null;
+  try {
+    const { payload } = await jwtVerify(token, secret);
+    return payload;
+  } catch (error) {
+    return null;
+  }
+}
+
+/**
+ * A reusable function to handle redirects and clear invalid cookies.
+ * @param {Request} req The incoming request.
+ * @param {string} loginPath The path to redirect to (e.g., '/login').
+ * @returns {NextResponse} The redirect response.
+ */
+function handleRedirect(req, loginPath) {
+  const response = NextResponse.redirect(new URL(loginPath, req.url));
+  response.cookies.delete("auth-token"); // Clear the invalid or missing token
+  return response;
+}
+
+
 export async function middleware(req) {
   const { pathname } = req.nextUrl;
   const token = req.cookies.get("auth-token")?.value;
 
-  const isSuperAdminPath = pathname.startsWith("/superadmin");
-  const isAdminLoginPage = pathname === "/admin/login";
-  const isAdminPath = pathname.startsWith("/admin") && !isAdminLoginPage;
-
-  // ✅ Allow login page without middleware interference
-  if (isAdminLoginPage) {
+  // Paths that are public and should be skipped by the logic below.
+  if (pathname === "/admin/login" || pathname === "/login" || pathname === "/unauthorized") {
     return NextResponse.next();
   }
 
-  // ✅ Superadmin route protection
-  if (isSuperAdminPath) {
-    if (!token) return NextResponse.redirect(new URL("/admin/login", req.url));
+  const payload = await verifyToken(token);
 
-    try {
-      const decoded = await jwtVerify(token, secret);
-      if (decoded.payload.role !== "superadmin") {
-        return NextResponse.redirect(new URL("/unauthorized", req.url));
-      }
-    } catch {
-      // Clear invalid cookie
-      const res = NextResponse.redirect(new URL("/admin/login", req.url));
-      res.cookies.delete("auth-token");
-      return res;
+  // Superadmin route protection
+  if (pathname.startsWith("/superadmin")) {
+    if (payload?.role !== "superadmin") {
+      return handleRedirect(req, "/admin/login");
     }
-    return NextResponse.next();
   }
 
-  // ✅ Admin route protection
-  if (isAdminPath) {
-    if (!token) return NextResponse.redirect(new URL("/admin/login", req.url));
-
-    try {
-      const decoded = await jwtVerify(token, secret);
-      if (!["admin", "superadmin"].includes(decoded.payload.role)) {
-        return NextResponse.redirect(new URL("/unauthorized", req.url));
-      }
-    } catch {
-      // Clear invalid cookie
-      const res = NextResponse.redirect(new URL("/admin/login", req.url));
-      res.cookies.delete("auth-token");
-      return res;
+  // Admin route protection
+  else if (pathname.startsWith("/admin")) {
+    if (!["admin", "superadmin"].includes(payload?.role)) {
+      return handleRedirect(req, "/admin/login");
     }
-    return NextResponse.next();
   }
 
-  // ✅ Customer routes (profile/checkout)
-  if (["/profile", "/checkout"].includes(pathname)) {
-    if (!token) return NextResponse.redirect(new URL("/login", req.url));
-
-    try {
-      await jwtVerify(token, secret);
-    } catch {
-      const res = NextResponse.redirect(new URL("/login", req.url));
-      res.cookies.delete("auth-token");
-      return res;
+  // Customer routes protection (profile/checkout)
+  else if (["/profile", "/checkout"].includes(pathname)) {
+    if (!payload) { // Any valid token is enough for customers
+      return handleRedirect(req, "/login");
     }
   }
 
   return NextResponse.next();
 }
 
+
 export const config = {
+  // The matcher remains the same, it's already well-configured.
   matcher: [
     "/admin/:path*",
-    "/admin",        // ✅ Removed /admin/login
     "/superadmin/:path*",
-    "/superadmin",
     "/profile",
     "/checkout",
   ],

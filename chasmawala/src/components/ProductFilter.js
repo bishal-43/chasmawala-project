@@ -1,6 +1,7 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { FiRefreshCw } from "react-icons/fi";
+import { usePathname, useRouter } from "next/navigation";
 
 /**
  * A client-side component to filter products by category, brand, and price.
@@ -31,19 +32,35 @@ const ProductFilter = ({
     maxPrice: initialFilters.maxPrice || initialPriceRange[1],
   });
 
+
+
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const isInitialMount = useRef(true);
+
   // ✅ When the available price range from the API changes,
   // update the filter's max price ONLY if it wasn't set by the user via URL.
   useEffect(() => {
-    if (!initialFilters.maxPrice) {
-      setFilters(prev => ({ ...prev, maxPrice: initialPriceRange[1] }));
+    if (isInitialMount.current) {
+      isInitialMount.current = false; // Set it to false for subsequent renders
+      return; // Exit the effect
     }
-  }, [initialPriceRange[1], initialFilters.maxPrice]);
+  // 1. Call the parent function to refetch products
+  onFilterChange(filters);
 
-  // ✅ When the filters state changes, notify the parent page.
-  // This triggers the API call to fetch filtered products.
-  useEffect(() => {
-    onFilterChange(filters);
-  }, [filters, onFilterChange]);
+  // 2. Update the URL query string
+  const params = new URLSearchParams();
+  filters.categories.forEach(c => params.append('category', c));
+  filters.brands.forEach(b => params.append('brand', b));
+  if (filters.maxPrice < initialPriceRange[1]) {
+     params.set('maxPrice', filters.maxPrice);
+  }
+  
+  // router.push will update the URL without a full page reload
+  router.push(`${pathname}?${params.toString()}`);
+
+}, [filters, onFilterChange, pathname, router, initialPriceRange]);
 
   // Toggles an item in a filter array (categories or brands).
   const toggle = (key, value) => {
