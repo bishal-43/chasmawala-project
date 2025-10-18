@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { loginUser } from "@/services/auth";
 import { useAuth } from "@/contexts/authContext";
+import Link from "next/link";
 
 // Reusable Icon Components (or import from a library)
 const MailIcon = () => (
@@ -94,6 +95,16 @@ const LoginPage = () => {
                     <LockIcon />
                 </div>
                 <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full pl-10 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition" required />
+            </div>
+
+            <div className="flex items-center justify-end">
+              <div className="text-sm">
+                <Link href="/forgot-password" legacyBehavior>
+                  <a className="font-semibold text-emerald-500 hover:underline">
+                    Forgot Password?
+                  </a>
+                </Link>
+              </div>
             </div>
             
             <button type="submit" className={`w-full p-3 rounded-lg text-white font-semibold transition-all duration-300 ease-in-out transform hover:scale-105 ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-emerald-500 hover:bg-emerald-600"}`} disabled={loading}>

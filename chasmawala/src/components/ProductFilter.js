@@ -2,6 +2,8 @@
 import { useState, useEffect, useRef } from "react";
 import { FiRefreshCw } from "react-icons/fi";
 import { usePathname, useRouter } from "next/navigation";
+import Slider from "rc-slider"; 
+import "rc-slider/assets/index.css";
 
 /**
  * A client-side component to filter products by category, brand, and price.
@@ -21,7 +23,7 @@ const ProductFilter = ({
   const {
     categories = [],
     brands = [],
-    priceRange: initialPriceRange = [0, 5000],
+    priceRange: initialPriceRange = [0, 10000],
   } = options;
 
   // ✅ Initialize state by merging initialFilters from props with default values.
@@ -29,7 +31,8 @@ const ProductFilter = ({
   const [filters, setFilters] = useState({
     categories: initialFilters.categories || [],
     brands: initialFilters.brands || [],
-    maxPrice: initialFilters.maxPrice || initialPriceRange[1],
+    minPrice: initialFilters.minPrice ?? initialPriceRange[0],
+    maxPrice: initialFilters.maxPrice ?? initialPriceRange[1],
   });
 
 
@@ -53,12 +56,17 @@ const ProductFilter = ({
   const params = new URLSearchParams();
   filters.categories.forEach(c => params.append('category', c));
   filters.brands.forEach(b => params.append('brand', b));
+
+  if (filters.minPrice > initialPriceRange[0]) {
+        params.set('minPrice', filters.minPrice);
+    }
+
   if (filters.maxPrice < initialPriceRange[1]) {
      params.set('maxPrice', filters.maxPrice);
   }
   
   // router.push will update the URL without a full page reload
-  router.push(`${pathname}?${params.toString()}`);
+  router.push(`${pathname}?${params.toString()}`, { scroll: false });
 
 }, [filters, onFilterChange, pathname, router, initialPriceRange]);
 
@@ -75,8 +83,12 @@ const ProductFilter = ({
   };
 
   // Updates the max price from the range slider.
-  const handlePriceChange = (val) => {
-    setFilters((prev) => ({ ...prev, maxPrice: Number(val) }));
+  const handlePriceChange = (value) => {
+    setFilters(prev => ({ 
+      ...prev, 
+      minPrice: value[0],
+      maxPrice: value[1] 
+    }));
   };
 
   // Resets all filters to their default state.
@@ -84,9 +96,22 @@ const ProductFilter = ({
     setFilters({
       categories: [],
       brands: [],
+      minPrice: initialPriceRange[0],
       maxPrice: initialPriceRange[1],
     });
   };
+
+
+  if (!initialPriceRange || initialPriceRange.length !== 2) {
+    return (
+      <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm animate-pulse">
+        <div className="h-6 bg-gray-200 rounded w-1/3 mb-4"></div>
+        <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
+        <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
+        <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
@@ -138,18 +163,30 @@ const ProductFilter = ({
 
       {/* Price Range Section */}
       <div>
-        <h3 className="text-sm font-medium text-gray-700 mb-2">Price</h3>
-        <div className="flex justify-between text-xs text-gray-500 mb-2">
-          <span>₹{initialPriceRange[0]}</span>
+        <h3 className="text-sm font-medium text-gray-700 mb-2">Price Range</h3>
+        <div className="flex justify-between text-sm text-gray-600 mb-2 font-medium">
+          <span>₹{filters.minPrice}</span>
           <span>₹{filters.maxPrice}</span>
         </div>
-        <input
-          type="range"
-          min={initialPriceRange[0]}
-          max={initialPriceRange[1]}
-          value={filters.maxPrice}
-          onChange={(e) => handlePriceChange(e.target.value)}
-          className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-emerald-600"
+        
+        <Slider
+            range // This prop enables the two-handle range mode
+            min={initialPriceRange[0]}
+            max={initialPriceRange[1]}
+            value={[filters.minPrice, filters.maxPrice]}
+            onChange={handlePriceChange}
+            allowCross={false} // Prevents handles from crossing each other
+            step={50} // Optional: define the increment step
+            trackStyle={{ backgroundColor: '#059669', height: 6 }}
+            handleStyle={{
+              borderColor: '#059669',
+              height: 18,
+              width: 18,
+              marginTop: -6,
+              backgroundColor: 'white',
+              opacity: 1,
+            }}
+            railStyle={{ backgroundColor: '#d1d5db', height: 6 }}
         />
       </div>
     </div>

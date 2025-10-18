@@ -4,16 +4,35 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { connectDB } from "@/config/db";
 import User from "@/models/userModel";
+import sgMail from '@sendgrid/mail';
+import crypto from 'crypto';
+import { z } from "zod";
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+const signupSchema = z.object({
+  name: z.string().min(1, { message: "Name is required" }),
+  email: z.string().email({ message: "Invalid email address" }),
+  password: z.string().min(8, { message: "Password must be at least 8 characters long" }),
+});
 
 export async function POST(req) {
+  let newUser = null;
   try {
     await connectDB();
 
-    const { name, email, password } = await req.json();
+    const body = await req.json();
 
-    if (!name || !email || !password) {
-      return NextResponse.json({ error: "All fields are required" }, { status: 400 });
+    // 3. Validate the request body
+    const validation = signupSchema.safeParse(body);
+
+    if (!validation.success) {
+      // Get the first error message for a simple response
+      const errorMessage = validation.error.errors[0].message;
+      return NextResponse.json({ error: errorMessage }, { status: 400 });
     }
+
+    const { name, email, password } = validation.data;
 
     // Check if user exists
     const existingUser = await User.findOne({ email });
@@ -21,37 +40,56 @@ export async function POST(req) {
       return NextResponse.json({ error: "User already exists" }, { status: 400 });
     }
 
-    
+    const verifyToken = crypto.randomBytes(32).toString('hex');
+    const verifyTokenExpiry = Date.now() + 3600000; // Token expires in 1 hour
 
     // Create user
-    const user = await User.create({
+    newUser = await User.create({
       name,
       email,
       password,
       role: "customer",
+      verifyToken,
+      verifyTokenExpiry,
+      isVerified: false,
     });
 
-    // Create token
-    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
-      expiresIn: "30d",
-    });
 
-    // Set cookie
-    const res = NextResponse.json({
-      success: true,
-      user: { id: user._id, name: user.name, email: user.email, role: user.role },
-    });
+    const verificationLink = `${process.env.BASE_URL}/account/verify?token=${verifyToken}`;
 
-    res.cookies.set("auth-token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-    });
+    const msg = {
+      to: email,
+      from: process.env.SENDER_EMAIL, // Your verified SendGrid sender
+      subject: 'Verify Your Email Address',
+      html: `
+        <h1>Welcome to Chasmawala!</h1>
+        <p>Click the link below to verify your email address. This link will expire in 1 hour.</p>
+        <a href="${verificationLink}" style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Verify Email</a>
+      `,
+    };
 
-    return res;
+    await sgMail.send(msg);
+
+
+    return NextResponse.json(
+      { message: 'Signup successful! Please check your email to verify your account.' },
+      { status: 201 }
+    );
+
   } catch (error) {
     console.error("Signup error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+
+    // BEST PRACTICE: If email fails to send after user is created, delete the user to allow them to try again.
+    if (newUser) {
+      await User.findByIdAndDelete(newUser._id);
+    }
+
+    // Check if it was a SendGrid error for a more specific message
+    if (error.response) {
+      console.error('SendGrid Error Body:', error.response.body);
+      return NextResponse.json({ error: "Could not send verification email. Please try again." }, { status: 500 });
+    }
+
+    return NextResponse.json({ error: "An internal server error occurred." }, { status: 500 });
   }
 }

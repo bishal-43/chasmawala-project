@@ -14,9 +14,17 @@ export async function POST(req) {
       return NextResponse.json({ error: "All fields are required" }, { status: 400 });
     }
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).select('+password');
     if (!user) {
-      return NextResponse.json({ error: "User not found, !please Sign Up" }, { status: 401 });
+      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+    }
+
+
+    if (!user.isVerified) {
+      return NextResponse.json(
+        { message: "Please verify your email address before logging in. Check your inbox for a verification link." },
+        { status: 403 } // 403 Forbidden is the appropriate status code
+      );
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
