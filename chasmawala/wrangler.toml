@@ -1,0 +1,9 @@
+name = "chasmawala"
+compatibility_date = "2024-06-01"
+
+[site]
+bucket = ".vercel/output/static"
+entry-point = "."
+
+[build]
+command = "npm run build"
