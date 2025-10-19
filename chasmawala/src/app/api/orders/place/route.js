@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
-import connectDB from "@/config/db";        // adjust path if your project uses "@/config/db"
+import {connectDB} from "@/config/db";        // adjust path if your project uses "@/config/db"
 import Order from "@/models/orderModel";  // adjust path/name to match your file
 import Product from "@/models/productModel"; // ensure this exists and has `price` and `stock` fields
 
