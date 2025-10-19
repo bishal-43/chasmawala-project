@@ -7,6 +7,7 @@ import User from "@/models/userModel";
 import sgMail from '@sendgrid/mail';
 import crypto from 'crypto';
 import { z } from "zod";
+import { ratelimit } from "@upstash/ratelimit";
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
@@ -19,6 +20,13 @@ const signupSchema = z.object({
 export async function POST(req) {
   let newUser = null;
   try {
+    const ip = req.ip ?? req.headers.get('x-forwarded-for') ?? '127.0.0.1';
+    const { success, limit, remaining } = await ratelimit.limit(ip);
+
+    if (!success) {
+      return NextResponse.json({ error: "Too many requests. Please try again in a few seconds." }, { status: 429 });
+    }
+    
     await connectDB();
 
     const body = await req.json();

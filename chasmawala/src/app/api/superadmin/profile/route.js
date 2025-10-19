@@ -1,5 +1,5 @@
 import { verifyAdminToken } from "@/utils/verifyToken";
-import connectDB from "@/lib/connectDB";
+import connectDB from "@/config/db";
 import User from "@/models/userModel";
 
 
