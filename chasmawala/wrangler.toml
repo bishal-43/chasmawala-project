@@ -1,8 +1,0 @@
-name = "chasmawala"
-compatibility_date = "2025-10-19"
-main = ".open-next/server-function/index.js"
-
-
-[build]
-command = "npm run build:cloudflare"
-
