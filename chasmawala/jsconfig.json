@@ -15,7 +15,8 @@
       "@middleware/*": ["middleware/*"],
       "@models/*": ["models/*"],
       "@/*": ["./*"]
-    }
+    },
+    "types": []
   }
 }
 
