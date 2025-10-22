@@ -1,3 +1,5 @@
+// src/app/verify-email/[token]/page.js
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -45,7 +47,7 @@ export default function VerifyEmailPage() {
       <h1>Email Verification</h1>
       <p>{message}</p>
       {status === 'success' && (
-        <Link href="/login" style={{ color: '#007bff' }}>
+        <Link href="/account/login" style={{ color: '#007bff' }}>
           Proceed to Login
         </Link>
       )}

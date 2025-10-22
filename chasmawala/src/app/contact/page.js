@@ -216,29 +216,29 @@ export default function ContactPage() {
               <ContactInfoItem
                 icon={<MapPin size={24} />}
                 title="Our Address"
-                value="Ramanand Chowk, Janakpur, Nepal"
-                href="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3563.2635571368564!2d85.91627512521792!3d26.735964376753056!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39ec401d18fed035%3A0xb177a04e09cda983!2sRamanand%20Chowk%2C%20Janakpur%2045600%2C%20Nepal!5e0!3m2!1sen!2sin!4v1742118376884!5m2!1sen!2sin"
+                value="Murli Chowk, Janakpur, Nepal"
+                href="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d552.2456408497301!2d85.92789432025934!3d26.72163473434559!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39ec3f5b65452a3f%3A0x31c8838d3d1e235b!2sChashmawala%20Eye%20Clinic%20and%20Optical%20Shop!5e0!3m2!1sen!2snp!4v1761022741395!5m2!1sen!2snp"
               />
               <ContactInfoItem
                 icon={<Mail size={24} />}
                 title="Email Us"
-                value="support@chasmawala.com"
-                href="mailto:support@chasmawala.com"
+                value="shrbansah@gmail.com"
+                href="mailto:shrbansah@gmail.com"
               />
               <ContactInfoItem
                 icon={<Phone size={24} />}
                 title="Call Us"
-                value="+91 12345 67890"
-                href="tel:+911234567890"
+                value="+977 9744364817"
+                href="tel:+9779744364817"
               />
               
               <div className="border-t border-gray-200 dark:border-gray-700 pt-8">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Follow Us</h3>
                 <div className="flex items-center gap-4">
-                  <SocialLink href="https://instagram.com" icon={<Instagram size={20} className="text-gray-500" />} aria-label="Instagram" />
-                  <SocialLink href="https://facebook.com" icon={<Facebook size={20} className="text-gray-500" />} aria-label="Facebook" />
-                  <SocialLink href="https://twitter.com" icon={<Twitter size={20} className="text-gray-500" />} aria-label="Twitter" />
-                  <SocialLink href="https://linkedin.com" icon={<Linkedin size={20} className="text-gray-500" />} aria-label="LinkedIn" />
+                  <SocialLink href="https://www.instagram.com/sshrban?igsh=OXJodzVmczRodG93&utm_source=qr" icon={<Instagram size={20} className="text-gray-500" />} aria-label="Instagram" />
+                  <SocialLink href="https://www.facebook.com/share/1BYMHSBfhb/?mibextid=wwXIfr" icon={<Facebook size={20} className="text-gray-500" />} aria-label="Facebook" />
+                  {/* <SocialLink href="https://twitter.com" icon={<Twitter size={20} className="text-gray-500" />} aria-label="Twitter" /> */}
+                  <SocialLink href="https://www.linkedin.com/in/bishal-kumar-gupta-3b775b258?" icon={<Linkedin size={20} className="text-gray-500" />} aria-label="LinkedIn" />
                 </div>
               </div>
             </div>
@@ -273,7 +273,7 @@ export default function ContactPage() {
        <div className="h-96 md:h-[500px] w-full mt-10">
           <iframe
             className="w-full h-full"
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3563.2635571368564!2d85.91627512521792!3d26.735964376753056!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39ec401d18fed035%3A0xb177a04e09cda983!2sRamanand%20Chowk%2C%20Janakpur%2045600%2C%20Nepal!5e0!3m2!1sen!2sin!4v1742118376884!5m2!1sen!2sin"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d552.2456408497301!2d85.92789432025934!3d26.72163473434559!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39ec3f5b65452a3f%3A0x31c8838d3d1e235b!2sChashmawala%20Eye%20Clinic%20and%20Optical%20Shop!5e0!3m2!1sen!2snp!4v1761022741395!5m2!1sen!2snp"
             allowFullScreen=""
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"

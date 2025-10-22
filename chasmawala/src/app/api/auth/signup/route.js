@@ -7,9 +7,22 @@ import User from "@/models/userModel";
 import sgMail from '@sendgrid/mail';
 import crypto from 'crypto';
 import { z } from "zod";
-import { ratelimit } from "@upstash/ratelimit";
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
+
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN,
+});
+
+const ratelimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(5, "10 s"),
+  analytics: true,
+});
 
 const signupSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
@@ -20,11 +33,16 @@ const signupSchema = z.object({
 export async function POST(req) {
   let newUser = null;
   try {
-    const ip = req.ip ?? req.headers.get('x-forwarded-for') ?? '127.0.0.1';
-    const { success, limit, remaining } = await ratelimit.limit(ip);
+    const ip = req.headers.get("x-forwarded-for") || "127.0.0.1";
 
+
+    // ✅ Apply rate limit
+    const { success } = await ratelimiter.limit(ip);
     if (!success) {
-      return NextResponse.json({ error: "Too many requests. Please try again in a few seconds." }, { status: 429 });
+      return NextResponse.json(
+        { error: "Too many signup attempts. Please wait a moment and try again." },
+        { status: 429 }
+      );
     }
     
     await connectDB();
@@ -63,7 +81,7 @@ export async function POST(req) {
     });
 
 
-    const verificationLink = `${process.env.BASE_URL}/account/verify?token=${verifyToken}`;
+    const verificationLink = `${process.env.BASE_URL}/verify-email/${verifyToken}`;
 
     const msg = {
       to: email,

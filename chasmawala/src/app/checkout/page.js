@@ -23,7 +23,7 @@ export default function CheckoutPage() {
     city: "",
     state: "",
     postalCode: "",
-    country: "India",
+    country: "",
   });
 
   const [paymentMethod, setPaymentMethod] = useState("COD"); // COD | Stripe | Razorpay | Card
@@ -114,6 +114,7 @@ export default function CheckoutPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div className="bg-white p-6 rounded shadow">
             <h2 className="text-lg font-semibold mb-4">Shipping Address</h2>
+            <h5 className="text-lg font-semibold mb-4">Delivery available only in Janakpur, Nepal</h5>
 
             <div className="space-y-2">
               <input value={shipping.fullName} onChange={(e) => updateShipping("fullName", e.target.value)} placeholder="Full name" className="w-full p-2 border rounded" />
@@ -133,8 +134,8 @@ export default function CheckoutPage() {
             <h2 className="text-lg font-semibold mt-6 mb-2">Payment</h2>
             <div className="space-y-2">
               <label className="flex items-center gap-2"><input type="radio" checked={paymentMethod === "COD"} onChange={() => setPaymentMethod("COD")} /> Cash on Delivery (COD)</label>
-              <label className="flex items-center gap-2"><input type="radio" checked={paymentMethod === "Stripe"} onChange={() => setPaymentMethod("Stripe")} /> Card / Stripe (demo)</label>
-              <label className="flex items-center gap-2"><input type="radio" checked={paymentMethod === "Razorpay"} onChange={() => setPaymentMethod("Razorpay")} /> UPI / Razorpay (demo)</label>
+              {/* <label className="flex items-center gap-2"><input type="radio" checked={paymentMethod === "Stripe"} onChange={() => setPaymentMethod("Stripe")} /> Card / Stripe (demo)</label> */}
+              {/* <label className="flex items-center gap-2"><input type="radio" checked={paymentMethod === "Razorpay"} onChange={() => setPaymentMethod("Razorpay")} /> UPI / Razorpay (demo)</label> */}
             </div>
 
             {error && <div className="mt-4 text-red-600">{error}</div>}

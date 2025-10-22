@@ -14,7 +14,7 @@ const faqData = [
     items: [
       {
         question: "What payment methods do you accept?",
-        answer: "We accept all major credit and debit cards, UPI (including Google Pay, PhonePe, Paytm), Net Banking, and select mobile wallets. Cash on Delivery (COD) is also available for most pincodes.",
+        answer: "Currently, we accept Cash on Delivery (COD) and ESewa on Contact.",
       },
       {
         question: "Can I use my prescription to order glasses?",

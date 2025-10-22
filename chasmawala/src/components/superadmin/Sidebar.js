@@ -7,6 +7,7 @@ const links = [
   { href: "/superadmin/admins", label: "Admins" },
   { href: "/superadmin/users", label: "Users" },
   { href: "/superadmin/orders", label: "Orders" },
+  { href: "/superadmin/doctors", label: "Doctors" },
 ];
 
 export default function Sidebar() {

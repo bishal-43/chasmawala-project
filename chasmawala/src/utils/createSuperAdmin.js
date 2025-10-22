@@ -1,11 +1,11 @@
-// scripts/createSuperAdmin.js
+// utils/createSuperAdmin.js
 
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 
-import User from "../models/user.js"; // adjust path as needed
+import User from "../models/userModel.js"; // adjust path as needed
 
-dotenv.config();
+dotenv.config({ path: ".env.local" });
 
 const MONGO_URI = process.env.MONGO_URI;
 const name = process.env.SUPERADMIN_NAME;
