@@ -3,9 +3,10 @@
 import { NextResponse } from 'next/server';
 import { connectDB } from '@/config/db';
 import Product from '@/models/productModel';
-import { verifyAdminToken } from '@/lib/auth';
+import { withAdminAuth } from '@/lib/adminMiddleware';
 import { v2 as cloudinary } from 'cloudinary';
 import slugify from 'slugify';
+import { z } from 'zod';
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -20,7 +21,7 @@ export async function POST(req) {
   const cookieHeader = req.headers.get('cookie');
   const token = cookieHeader?.split(';').find(c => c.trim().startsWith('auth-token='))?.split('=')[1];
 
-  const isAdmin = await verifyAdminToken(token);
+  const isAdmin = await withAdminAuth(token);
   if (!isAdmin) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }

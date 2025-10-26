@@ -7,9 +7,9 @@ import { withAdminAuth } from "@/lib/adminMiddleware"; // 1. Import the wrapper
 
 // --- GET a single product (Publicly accessible) ---
 // This handler is NOT wrapped, so anyone can access it.
-export async function GET(req, { params }) {
+export async function GET(req, context) {
   await connectDB();
-  const { slug } = params;
+  const slug = req.nextUrl.pathname.split('/').pop();
   try {
     const product = await Product.findOne({ slug });
     if (!product) {
@@ -23,9 +23,9 @@ export async function GET(req, { params }) {
 
 // --- DELETE a product (Admin only) ---
 // 2. This is the core logic, separated into its own function.
-async function deleteProductHandler(req, { params }) {
+async function deleteProductHandler(req, context, user) {
   await connectDB();
-  const { slug } = params;
+  const slug = req.nextUrl.pathname.split('/').pop();
   const deletedProduct = await Product.findOneAndDelete({ slug });
 
   if (!deletedProduct) {
@@ -38,9 +38,9 @@ export const DELETE = withAdminAuth(deleteProductHandler);
 
 
 // --- UPDATE a product (Admin only) ---
-async function updateProductHandler(req, { params }) {
+async function updateProductHandler(req, context, user) {
   await connectDB();
-  const { slug } = params;
+  const slug = req.nextUrl.pathname.split('/').pop();
   const body = await req.json(); // Remember to add Zod validation here!
 
   const updatedProduct = await Product.findOneAndUpdate({ slug }, body, { new: true });
