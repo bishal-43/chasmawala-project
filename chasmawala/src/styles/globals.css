@@ -146,3 +146,29 @@ body {
     animation: scaleIn 0.2s ease-out forwards;
   }
 }
+
+
+
+/* --- Fix for Chrome/Edge/Safari Browser Autofill Background --- */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+    /* Remove the default box-shadow */
+    -webkit-box-shadow: 0 0 0 30px white inset !important;
+    
+    /* Optional: Set your desired text color */
+    /* -webkit-text-fill-color: black !important; */
+}
+
+/* --- Fix for Firefox Browser Autofill --- */
+input:-moz-autofill,
+input:-moz-autofill:hover,
+input:-moz-autofill:focus,
+input:-moz-autofill:active {
+    /* Remove the default box-shadow */
+    box-shadow: 0 0 0 30px white inset !important;
+
+    /* Optional: Set your desired text color */
+    /* -moz-text-fill-color: black !important; */
+}

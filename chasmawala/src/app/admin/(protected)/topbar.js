@@ -1,12 +1,9 @@
-// app/admin/(protected)/topbar.js
 "use client";
 
 import { useAuth } from "@/contexts/authContext";
 import { useRouter } from "next/navigation";
 import { logoutUser } from "@/services/auth";
 import { Bell, LogOut, Menu, Search, Settings, UserCircle2 } from "lucide-react";
-
-// Shadcn UI Components
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -34,7 +31,6 @@ export default function Topbar({ onMenuClick }) {
     }
   };
 
-  // Generate initials for Avatar fallback
   const getInitials = (name) => {
     if (!name) return "A";
     const names = name.split(' ');
@@ -45,32 +41,27 @@ export default function Topbar({ onMenuClick }) {
   };
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-4 border-b bg-background px-4 sm:px-6">
+    <header className="sticky top-0 z-20 flex h-16 items-center justify-between gap-4 border-b bg-background px-4 sm:px-6">
       
-      {/* Left Side: Mobile Menu & Title */}
-      <div className="flex items-center gap-2">
-        {/* Hamburger Menu for mobile sidebar */}
-        <Button
-          variant="outline"
-          size="icon"
-          className="shrink-0 md:hidden"
-          onClick={onMenuClick} // Pass click handler to toggle sidebar
-        >
-          <Menu className="h-5 w-5" />
-          <span className="sr-only">Toggle navigation menu</span>
-        </Button>
-        <h1 className="text-xl font-bold text-gray-800 hidden md:block">
-          Chasmawala
-        </h1>
-      </div>
-
-      {/* Center: Search Bar */}
-      <div className="flex-1 max-w-md">
+      {/* Left Side: Mobile Menu */}
+      {/* This button will now open the sidebar on mobile */}
+      <Button
+        variant="outline"
+        size="icon"
+        className="shrink-0 md:hidden"
+        onClick={onMenuClick}
+      >
+        <Menu className="h-5 w-5" />
+        <span className="sr-only">Toggle navigation menu</span>
+      </Button>
+      
+      {/* Center: Search Bar (Expanded for more space) */}
+      <div className="flex-1">
         <form>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              className="w-full appearance-none bg-muted pl-9 shadow-none"
+              className="w-full appearance-none bg-background pl-9 shadow-none md:w-2/3 lg:w-1/3"
               placeholder="Search products, orders..."
             />
           </div>
@@ -91,7 +82,6 @@ export default function Topbar({ onMenuClick }) {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-9 w-9 rounded-full">
               <Avatar className="h-9 w-9">
-                {/* Add user.avatarUrl if you have it */}
                 <AvatarImage src={user?.avatarUrl} alt={user?.name} />
                 <AvatarFallback className="bg-primary text-primary-foreground font-semibold">
                   {getInitials(user?.name)}
@@ -126,3 +116,4 @@ export default function Topbar({ onMenuClick }) {
     </header>
   );
 }
+

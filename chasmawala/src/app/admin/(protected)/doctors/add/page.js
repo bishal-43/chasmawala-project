@@ -19,58 +19,104 @@ export default function AddDoctorPage() {
     bio: "",
   });
 
+  const [imagePreview, setImagePreview] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [status, setStatus] = useState({ message: "", type: "" }); // 'success' or 'error'
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    
-    setForm((prevForm) => {
-      const newForm = { ...prevForm, [name]: value };
-      
-      // Auto-generate slug from name, but allow manual override
-      if (name === "name") {
-        newForm.slug = generateSlug(value);
+
+  useEffect(() => {
+    // This function will run when the component unmounts or imagePreview changes
+    return () => {
+      if (imagePreview) {
+        URL.revokeObjectURL(imagePreview);
       }
-      
-      return newForm;
-    });
+    };
+  }, [imagePreview]);
+
+  const handleChange = (e) => {
+    const { name, value, files } = e.target;
+
+    if (name === "image") {
+      const file = files[0];
+      setForm((prevForm) => ({
+        ...prevForm,
+        image: file || null,
+      }));
+
+      // Create or revoke image preview
+      if (imagePreview) {
+        URL.revokeObjectURL(imagePreview);
+      }
+      if (file) {
+        setImagePreview(URL.createObjectURL(file));
+      } else {
+        setImagePreview(null);
+      }
+    } else {
+      setForm((prevForm) => {
+        const newForm = { ...prevForm, [name]: value };
+        
+        // Auto-generate slug from name, but allow manual override
+        if (name === "name") {
+          newForm.slug = generateSlug(value);
+        }
+        
+        return newForm;
+      });
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setStatus({ message: "", type: "" }); // Reset status
+    setStatus({ message: "", type: "" });
+
+    // Use FormData to send file and text data together
+    const formData = new FormData();
+    formData.append("name", form.name);
+    formData.append("slug", form.slug);
+    formData.append("specialization", form.specialization);
+    formData.append("credentials", form.credentials);
+    formData.append("bio", form.bio);
+    if (form.image) {
+      formData.append("image", form.image);
+    }
 
     try {
       const res = await fetch("/api/admin/doctors", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        // Do NOT set Content-Type header;
+        // browser will automatically set it to multipart/form-data with the correct boundary
+        body: formData,
       });
 
       const data = await res.json();
 
       if (res.ok) {
         setStatus({ message: "Doctor added successfully!", type: "success" });
-        // Optionally, reset the form
+        // Reset the form
         setForm({
           name: "",
           slug: "",
           specialization: "",
           credentials: "",
-          image: "",
+          image: null,
           bio: "",
         });
+        if (imagePreview) {
+          URL.revokeObjectURL(imagePreview);
+        }
+        setImagePreview(null);
       } else {
         setStatus({ message: data.message || "An unexpected error occurred.", type: "error" });
       }
     } catch (error) {
-        setStatus({ message: "Failed to connect to the server.", type: "error" });
+      setStatus({ message: "Failed to connect to the server.", type: "error" });
     } finally {
       setIsLoading(false);
     }
   };
+
 
   return (
     <div className="bg-gray-50 min-h-screen p-4 sm:p-6 lg:p-8">
@@ -157,19 +203,39 @@ export default function AddDoctorPage() {
 
               {/* Image URL */}
               <div>
-                <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-1">
-                  Image URL
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Doctor Photo
                 </label>
-                <input
-                  type="url"
-                  name="image"
-                  id="image"
-                  value={form.image}
-                  onChange={handleChange}
-                  placeholder="https://example.com/doctor.jpg"
-                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                />
+                <div className="mt-1 flex items-center space-x-6">
+                  {/* Image Preview */}
+                  <div className="shrink-0">
+                    <img
+                      className="h-24 w-24 object-cover rounded-md bg-gray-100 shadow-sm"
+                      src={imagePreview || "https://placehold.co/96x96/e2e8f0/cbd5e1?text=Photo"}
+                      alt="Doctor photo preview"
+                    />
+                  </div>
+                  {/* File Input */}
+                  <label className="block">
+                    <span className="sr-only">Choose profile photo</span>
+                    <input
+                      type="file"
+                      name="image"
+                      id="image"
+                      accept="image/png, image/jpeg, image/webp"
+                      onChange={handleChange}
+                      className="block w-full text-sm text-gray-500
+                        file:mr-4 file:py-2 file:px-4
+                        file:rounded-md file:border-0
+                        file:text-sm file:font-semibold
+                        file:bg-indigo-50 file:text-indigo-700
+                        hover:file:bg-indigo-100
+                        cursor-pointer"
+                    />
+                  </label>
+                </div>
               </div>
+
 
               {/* Bio */}
               <div>
