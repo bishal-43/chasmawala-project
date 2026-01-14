@@ -3,7 +3,7 @@
 import { NextResponse } from "next/server";
 import Doctor from "@/models/doctorModel";
 import { connectDB } from "@/config/db";
-import { verifyToken } from "@/lib/auth";
+import { verifyTokenAndGetUser } from "@/lib/auth";
 
 export async function POST(req, context) {
   try {

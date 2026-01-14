@@ -4,12 +4,13 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/authContext";
-
+import  PromoBanner  from "@/components/PromoBanner";
 import ImageSlider from "@/components/ImageSlider";
-import Hero from "@components/Hero";
+import Hero from "@/components/Hero";
 import Features from "@/components/Features";
 import ContactSection from "@/components/ContactSection";
-import ClarityCraftSection from "@components/ClarityCraftSection";
+import ClarityCraftSection from "@/components/ClarityCraftSection";
+import OfferBanner from "@/components/OfferBanner";
 
 export default function Home() {
   const { user, loading } = useAuth();
@@ -33,11 +34,19 @@ export default function Home() {
   return (
     <div className="relative ">
       <section className="relative z-10">
+        <PromoBanner />
+      </section>
+
+      <section className="relative z-10">
         <ImageSlider />
       </section>
 
       <section className="relative z-10">
         <Hero />
+      </section>
+
+      <section className="relative z-10 mt-8 px-4 md:px-10">
+        <OfferBanner />
       </section>
 
       <section className="relative z-10">
