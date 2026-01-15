@@ -12,9 +12,17 @@ module.exports = {
 					'0%': { transform: 'scale(0.5)', opacity: '0' },
 					'100%': { transform: 'scale(1)', opacity: '1' },
 				},
+				shimmer: {
+					'0%': { transform: 'translateX(-100%)' },
+					'100%': { transform: 'translateX(100%)' }
+				},
 			},
 			animation: {
 				'pop-in': 'pop-in 0.4s ease-out forwards',
+				shimmer: 'shimmer 3s ease-in-out infinite',
+			},
+			screens: {
+				'xs': '475px', // For the "xs:inline" classes
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

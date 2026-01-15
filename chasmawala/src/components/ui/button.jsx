@@ -50,14 +50,13 @@ const Button = React.forwardRef(({
     <Comp
       className={cn(buttonVariants({ variant, size, className }))}
       ref={ref}
-      disabled={loading} // 3. Use the `loading` prop to disable the button
+      disabled={loading}
       {...props}
     >
-      {/* 4. Conditionally render a loading spinner */}
-      {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-      
-      {/* 5. Render the button's content */}
-      {children}
+      <span className="inline-flex items-center gap-2">
+        {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+        {children}
+      </span>
     </Comp>
   );
 });

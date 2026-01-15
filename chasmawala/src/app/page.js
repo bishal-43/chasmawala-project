@@ -33,21 +33,23 @@ export default function Home() {
 
   return (
     <div className="relative ">
-      <section className="relative z-10">
-        <PromoBanner />
+      {/* <section className="relative z-10"> */}
+        {/* <PromoBanner /> */}
+      {/* </section> */}
+
+      <section className="relative z-10 mt-8 px-4 md:px-10">
+        <OfferBanner />
       </section>
 
-      <section className="relative z-10">
+      {/* <section className="relative z-10">
         <ImageSlider />
-      </section>
+      </section> */}
 
       <section className="relative z-10">
         <Hero />
       </section>
 
-      <section className="relative z-10 mt-8 px-4 md:px-10">
-        <OfferBanner />
-      </section>
+      
 
       <section className="relative z-10">
         <ClarityCraftSection />

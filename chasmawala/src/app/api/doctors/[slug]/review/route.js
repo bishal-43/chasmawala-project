@@ -19,7 +19,7 @@ export async function POST(req, context) {
     if(!token){
       return NextResponse.json({ message: "Unauthorized,Please login to review" }, { status: 401 });
     }
-    const user = await verifyToken(token);
+    const user = await verifyTokenAndGetUser(token);
     if (!user) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
