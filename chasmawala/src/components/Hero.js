@@ -58,13 +58,13 @@ export default function Hero() {
               variants={itemVariants}
             >
               <Link href="/collections">
-                <button className="w-full sm:w-auto flex items-center justify-center px-8 py-4 bg-blue-600 text-white font-bold rounded-lg shadow-lg hover:bg-blue-700 transition-transform duration-300 transform hover:scale-105">
+                <button className="w-full sm:w-auto flex items-center justify-center px-8 py-4 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:bg-blue-700 transition-transform duration-300 transform hover:scale-105">
                   Shop All Eyewear
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </button>
               </Link>
               <Link href="/virtual-tryOn">
-                 <button className="w-full sm:w-auto flex items-center justify-center px-8 py-4 bg-white text-gray-800 font-bold rounded-lg border-2 border-gray-200 shadow-md hover:border-blue-500 hover:text-blue-600 transition-all duration-300 transform hover:scale-105">
+                 <button className="w-full sm:w-auto flex items-center justify-center px-8 py-4 bg-white text-gray-800 font-bold rounded-xl border-2 border-gray-200 shadow-md hover:border-blue-500 hover:text-blue-600 transition-all duration-300 transform hover:scale-105">
                   Virtual Try-On
                 </button>
               </Link>

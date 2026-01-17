@@ -105,7 +105,7 @@ export default function CartDrawer({ isOpen, onClose }) {
               </p>
               <Link href="/checkout">
                 <button 
-                  className="w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold text-lg hover:bg-emerald-700 transition-all duration-300 ease-in-out transform hover:scale-105"
+                  className="w-full bg-emerald-600 text-white py-3 rounded-xl font-semibold text-lg hover:bg-emerald-700 transition-all duration-300 ease-in-out transform hover:scale-105"
                   onClick={onClose}
                 >
                   Proceed to Checkout
@@ -126,7 +126,7 @@ const CartItem = ({ item, onRemove, onIncrease, onDecrease }) => (
       <img
         src={item.images[0] || 'https://placehold.co/80x80/e2e8f0/e2e8f0?text=Img'}
         alt={item.name}
-        className="w-20 h-20 object-cover rounded-lg border"
+        className="w-20 h-20 object-cover rounded-xl border"
       />
     </div>
     <div className="flex-grow">
@@ -134,7 +134,7 @@ const CartItem = ({ item, onRemove, onIncrease, onDecrease }) => (
       <p className="text-sm text-gray-600 mt-1">${item.price.toFixed(2)}</p>
       <div className="flex items-center justify-between mt-3">
         {/* Quantity Stepper */}
-        <div className="flex items-center border border-gray-300 rounded-md">
+        <div className="flex items-center border border-gray-300 rounded-xl">
           <button onClick={() => onDecrease(item.ProductId)} className="px-3 py-1 text-lg text-gray-600 hover:bg-gray-100">-</button>
           <span className="px-4 py-1 text-base font-medium">{item.quantity}</span>
           <button onClick={() => onIncrease(item.ProductId)} className="px-3 py-1 text-lg text-gray-600 hover:bg-gray-100">+</button>
@@ -156,7 +156,7 @@ const EmptyCartView = ({ onClose }) => (
     <p className="text-gray-500 mt-2 mb-6">Looks like you haven't added anything to your cart yet.</p>
     <button
       onClick={onClose}
-      className="bg-emerald-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-colors"
+      className="bg-emerald-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-emerald-700 transition-colors"
     >
       Start Shopping
     </button>

@@ -112,7 +112,7 @@
 //             setSearchQuery("");
 //         }
 //     };
-    
+
 //     useEffect(() => {
 //         const handleClickOutside = (event) => {
 //             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -148,7 +148,7 @@
 //                     </button>
 //                 )}
 //             </div>
-            
+
 //             {/* FIX: Wishlist icon now hidden on extra-small screens */}
 //             <Link href="/wishlist" className="relative hidden sm:inline-flex text-gray-600 hover:text-emerald-600">
 //                 <Heart size={22} />
@@ -223,7 +223,7 @@
 //         { name: "Eye Test", href: "/eye-test" },
 //         { name: "Contact", href: "/contact" },
 //     ];
-    
+
 //     // ADDED: State and handler for mobile search
 //     const [searchQuery, setSearchQuery] = useState("");
 //     const handleSearchSubmit = (e) => {
@@ -257,7 +257,7 @@
 //                             {link.name}
 //                         </Link>
 //                     ))}
-                    
+
 //                     <div className="border-t pt-4 mt-2 space-y-2">
 //                          {/* ADDED: Wishlist link for mobile view */}
 //                          <Link href="/wishlist" className="flex items-center text-gray-700 hover:bg-gray-100 hover:text-emerald-600 p-3 rounded-md font-medium">
@@ -299,6 +299,8 @@ import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useAuth } from "@/contexts/authContext";
 import ThemeToggle from "@/components/ThemeToggle";
+import Image from "next/image";
+
 
 // Main Navbar Component
 const Navbar = () => {
@@ -328,9 +330,16 @@ const Navbar = () => {
                     <div className="flex items-center justify-between h-16 sm:h-20">
                         {/* Logo */}
                         <Link href="/" className="flex items-center space-x-2 group">
-                            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center">
-                                <Eye className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl overflow-hidden flex items-center justify-center bg-white">
+                                <Image
+                                    src="/logo.png"
+                                    alt="Chasmawala Logo"
+                                    width={40}
+                                    height={40}
+                                    className="object-contain"
+                                />
                             </div>
+
                             <span className="text-lg sm:text-2xl font-bold text-gray-800 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                                 <span className="hidden xs:inline">Chasmawala</span>
                                 <span className="xs:hidden">Chasmawala</span>
@@ -346,10 +355,10 @@ const Navbar = () => {
                         {/* Action Icons & CTA */}
                         <div className="flex items-center space-x-2 sm:space-x-3 lg:space-x-4">
                             <ActionIcons user={user} logout={logout} />
-                            
+
                             {/* CTA Button - Hidden on mobile, shown on desktop */}
-                            <Link 
-                                href="/eye-test" 
+                            <Link
+                                href="/eye-test"
                                 className="hidden lg:flex items-center space-x-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-4 xl:px-6 py-2.5 rounded-full text-sm font-semibold hover:shadow-lg hover:scale-105 transition-all duration-200"
                             >
                                 <Eye size={18} />
@@ -357,8 +366,8 @@ const Navbar = () => {
                             </Link>
 
                             {/* Mobile Menu Toggle */}
-                            <button 
-                                onClick={() => setIsMenuOpen(!isMenuOpen)} 
+                            <button
+                                onClick={() => setIsMenuOpen(!isMenuOpen)}
                                 className="lg:hidden text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 p-2"
                                 aria-label={isMenuOpen ? "Close menu" : "Open menu"}
                             >
@@ -367,7 +376,7 @@ const Navbar = () => {
                         </div>
                     </div>
                 </div>
-                
+
                 {/* Mobile Navigation */}
                 <MobileNav isOpen={isMenuOpen} user={user} logout={logout} onClose={() => setIsMenuOpen(false)} />
             </header>
@@ -379,27 +388,25 @@ const Navbar = () => {
 // Mobile Quick Navigation - Home and Collections always visible
 const MobileQuickNav = () => {
     const pathname = usePathname();
-    
+
     return (
         <nav className="flex lg:hidden items-center space-x-1 sm:space-x-2">
-            <Link 
-                href="/" 
-                className={`flex items-center space-x-1 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 ${
-                    pathname === '/' 
-                        ? 'bg-emerald-500 text-white shadow-md' 
+            <Link
+                href="/"
+                className={`flex items-center space-x-1 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 ${pathname === '/'
+                        ? 'bg-emerald-500 text-white shadow-md'
                         : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
-                }`}
+                    }`}
             >
                 <span className="text-base sm:text-lg">🏠</span>
                 <span className="hidden xs:inline">Home</span>
             </Link>
-            <Link 
-                href="/collections" 
-                className={`flex items-center space-x-1 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 ${
-                    pathname === '/collections' 
-                        ? 'bg-emerald-500 text-white shadow-md' 
+            <Link
+                href="/collections"
+                className={`flex items-center space-x-1 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 ${pathname === '/collections'
+                        ? 'bg-emerald-500 text-white shadow-md'
                         : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
-                }`}
+                    }`}
             >
                 <span className="text-base sm:text-lg">👓</span>
                 <span className="hidden xs:inline">Collections</span>
@@ -416,25 +423,23 @@ const DesktopNav = () => {
         { name: "Collections", href: "/collections" },
         { name: "Contact", href: "/contact" },
     ];
-    
+
     return (
         <nav className="hidden lg:flex items-center space-x-8">
             {navLinks.map((link) => {
                 const isActive = pathname === link.href;
                 return (
-                    <Link 
-                        key={link.name} 
-                        href={link.href} 
-                        className={`text-base font-medium transition-colors py-6 relative group ${
-                            isActive 
-                                ? 'text-emerald-600 dark:text-emerald-400' 
+                    <Link
+                        key={link.name}
+                        href={link.href}
+                        className={`text-base font-medium transition-colors py-6 relative group ${isActive
+                                ? 'text-emerald-600 dark:text-emerald-400'
                                 : 'text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400'
-                        }`}
+                            }`}
                     >
                         {link.name}
-                        <span className={`absolute bottom-5 left-0 right-0 h-0.5 bg-emerald-600 dark:bg-emerald-400 transition-transform duration-200 ${
-                            isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
-                        }`} />
+                        <span className={`absolute bottom-5 left-0 right-0 h-0.5 bg-emerald-600 dark:bg-emerald-400 transition-transform duration-200 ${isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+                            }`} />
                     </Link>
                 );
             })}
@@ -515,8 +520,8 @@ const ActionIcons = ({ user, logout }) => {
                             placeholder="Search glasses..."
                             className="w-48 xl:w-56 h-10 pl-4 pr-10 text-sm border border-gray-300 dark:border-gray-600 rounded-full bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-400 transition-all duration-300"
                         />
-                        <button 
-                            type="submit" 
+                        <button
+                            type="submit"
                             className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400"
                             aria-label="Search"
                         >
@@ -524,8 +529,8 @@ const ActionIcons = ({ user, logout }) => {
                         </button>
                     </form>
                 ) : (
-                    <button 
-                        onClick={() => setIsSearchOpen(true)} 
+                    <button
+                        onClick={() => setIsSearchOpen(true)}
                         className="p-2 text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
                         aria-label="Open search"
                     >
@@ -533,10 +538,10 @@ const ActionIcons = ({ user, logout }) => {
                     </button>
                 )}
             </div>
-            
+
             {/* Wishlist - Hidden on extra small screens */}
-            <Link 
-                href="/wishlist" 
+            <Link
+                href="/wishlist"
                 className="relative hidden sm:flex p-2 text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
                 aria-label="Wishlist"
             >
@@ -545,8 +550,8 @@ const ActionIcons = ({ user, logout }) => {
             </Link>
 
             {/* Cart - Always visible */}
-            <Link 
-                href="/cart" 
+            <Link
+                href="/cart"
                 className="relative p-2 text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
                 aria-label="Shopping cart"
             >
@@ -563,8 +568,8 @@ const ActionIcons = ({ user, logout }) => {
             <div className="relative hidden lg:block" ref={dropdownRef}>
                 {user ? (
                     <>
-                        <button 
-                            onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)} 
+                        <button
+                            onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
                             className="p-2 text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
                             aria-label="User menu"
                         >
@@ -573,9 +578,9 @@ const ActionIcons = ({ user, logout }) => {
                         <UserDropdown isOpen={isUserDropdownOpen} user={user} logout={logout} />
                     </>
                 ) : (
-                    <Link 
-                        href="/account/login" 
-                        className="bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-emerald-600 transition-colors"
+                    <Link
+                        href="/account/login"
+                        className="bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-emerald-600 transition-colors"
                     >
                         Login
                     </Link>
@@ -599,9 +604,9 @@ const UserDropdown = ({ isOpen, user, logout }) => {
         await logout();
         router.push('/');
     };
-    
+
     if (!isOpen) return null;
-    
+
     return (
         <div className="absolute top-full right-0 mt-4 w-56 bg-white dark:bg-gray-800 rounded-lg shadow-2xl border border-gray-100 dark:border-gray-700 overflow-hidden animate-fadeIn">
             <div className="p-4 border-b border-gray-100 dark:border-gray-700 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-gray-700 dark:to-gray-700">
@@ -609,28 +614,28 @@ const UserDropdown = ({ isOpen, user, logout }) => {
                 <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user?.email}</p>
             </div>
             <div className="py-2">
-                <Link 
-                    href="/account/profile" 
+                <Link
+                    href="/account/profile"
                     className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-emerald-50 dark:hover:bg-gray-700 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
                 >
                     My Profile
                 </Link>
-                <Link 
-                    href="/orders" 
+                <Link
+                    href="/orders"
                     className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-emerald-50 dark:hover:bg-gray-700 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
                 >
                     My Orders
                 </Link>
-                <Link 
-                    href="/wishlist" 
+                <Link
+                    href="/wishlist"
                     className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-emerald-50 dark:hover:bg-gray-700 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
                 >
                     My Wishlist
                 </Link>
             </div>
             <div className="p-2 border-t border-gray-100 dark:border-gray-700">
-                <button 
-                    onClick={handleLogout} 
+                <button
+                    onClick={handleLogout}
                     className="w-full text-left px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors font-medium"
                 >
                     Logout
@@ -644,15 +649,15 @@ const UserDropdown = ({ isOpen, user, logout }) => {
 const MobileNav = ({ isOpen, user, logout, onClose }) => {
     const router = useRouter();
     const pathname = usePathname();
-    
+
     const navLinks = [
         { name: "Home", href: "/", icon: "🏠" },
         { name: "Collections", href: "/collections", icon: "👓" },
         { name: "Contact", href: "/contact", icon: "📞" },
     ];
-    
+
     const [searchQuery, setSearchQuery] = useState("");
-    
+
     const handleSearchSubmit = (e) => {
         e.preventDefault();
         if (searchQuery.trim()) {
@@ -669,15 +674,14 @@ const MobileNav = ({ isOpen, user, logout, onClose }) => {
     };
 
     return (
-        <div 
-            className={`lg:hidden absolute top-full left-0 w-full bg-white dark:bg-gray-900 shadow-lg border-t border-gray-100 dark:border-gray-800 transition-all duration-300 ease-in-out ${
-                isOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-4'
-            }`}
+        <div
+            className={`lg:hidden absolute top-full left-0 w-full bg-white dark:bg-gray-900 shadow-lg border-t border-gray-100 dark:border-gray-800 transition-all duration-300 ease-in-out ${isOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-4'
+                }`}
         >
             <div className="p-4 max-h-[calc(100vh-4rem)] overflow-y-auto">
                 {/* CTA Button - Prominent in mobile menu */}
-                <Link 
-                    href="/eye-test" 
+                <Link
+                    href="/eye-test"
                     onClick={onClose}
                     className="flex items-center justify-center space-x-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white p-4 rounded-xl text-base font-semibold hover:shadow-lg transition-all duration-200 mb-4"
                 >
@@ -694,8 +698,8 @@ const MobileNav = ({ isOpen, user, logout, onClose }) => {
                         placeholder="Search glasses..."
                         className="w-full h-12 pl-4 pr-12 text-base border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-400"
                     />
-                    <button 
-                        type="submit" 
+                    <button
+                        type="submit"
                         className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400"
                         aria-label="Search"
                     >
@@ -708,15 +712,14 @@ const MobileNav = ({ isOpen, user, logout, onClose }) => {
                     {navLinks.map((link) => {
                         const isActive = pathname === link.href;
                         return (
-                            <Link 
-                                key={link.name} 
+                            <Link
+                                key={link.name}
                                 href={link.href}
                                 onClick={onClose}
-                                className={`flex items-center space-x-3 p-3 rounded-lg font-medium transition-colors ${
-                                    isActive 
-                                        ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400' 
+                                className={`flex items-center space-x-3 p-3 rounded-lg font-medium transition-colors ${isActive
+                                        ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400'
                                         : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-emerald-600 dark:hover:text-emerald-400'
-                                }`}
+                                    }`}
                             >
                                 <span className="text-xl">{link.icon}</span>
                                 <span>{link.name}</span>
@@ -727,7 +730,7 @@ const MobileNav = ({ isOpen, user, logout, onClose }) => {
 
                 {/* Quick Actions */}
                 <div className="border-t border-gray-200 dark:border-gray-700 pt-4 space-y-1">
-                    <Link 
+                    <Link
                         href="/wishlist"
                         onClick={onClose}
                         className="flex items-center space-x-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-emerald-600 dark:hover:text-emerald-400 p-3 rounded-lg font-medium transition-colors"
@@ -749,7 +752,7 @@ const MobileNav = ({ isOpen, user, logout, onClose }) => {
                                 <p className="font-semibold text-gray-800 dark:text-white text-sm">{user?.name}</p>
                                 <p className="text-xs text-gray-500 dark:text-gray-400">{user?.email}</p>
                             </div>
-                            <Link 
+                            <Link
                                 href="/account/profile"
                                 onClick={onClose}
                                 className="flex items-center space-x-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-emerald-600 dark:hover:text-emerald-400 p-3 rounded-lg font-medium transition-colors"
@@ -757,7 +760,7 @@ const MobileNav = ({ isOpen, user, logout, onClose }) => {
                                 <User size={20} />
                                 <span>My Account</span>
                             </Link>
-                            <Link 
+                            <Link
                                 href="/orders"
                                 onClick={onClose}
                                 className="flex items-center space-x-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-emerald-600 dark:hover:text-emerald-400 p-3 rounded-lg font-medium transition-colors"
@@ -765,7 +768,7 @@ const MobileNav = ({ isOpen, user, logout, onClose }) => {
                                 <ShoppingCart size={20} />
                                 <span>My Orders</span>
                             </Link>
-                            <button 
+                            <button
                                 onClick={handleLogout}
                                 className="w-full flex items-center space-x-3 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 p-3 rounded-lg font-medium transition-colors"
                             >
@@ -774,7 +777,7 @@ const MobileNav = ({ isOpen, user, logout, onClose }) => {
                             </button>
                         </>
                     ) : (
-                        <Link 
+                        <Link
                             href="/account/login"
                             onClick={onClose}
                             className="flex items-center justify-center bg-emerald-500 text-white hover:bg-emerald-600 p-3 rounded-lg font-semibold transition-colors"
@@ -786,7 +789,7 @@ const MobileNav = ({ isOpen, user, logout, onClose }) => {
 
                 {/* Contact CTA */}
                 <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                    <a 
+                    <a
                         href="tel:+9779744364817"
                         className="flex items-center justify-center space-x-2 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 p-3 rounded-lg font-medium transition-colors"
                     >

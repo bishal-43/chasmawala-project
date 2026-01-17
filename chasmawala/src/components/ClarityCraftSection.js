@@ -47,7 +47,7 @@ export default function ClarityCraftSection() {
 
             <motion.div variants={itemVariants}>
               <Link href="/collections">
-                <button className="inline-flex items-center justify-center px-8 py-4 bg-emerald-600 text-white font-bold rounded-lg shadow-lg hover:bg-emerald-700 transition-transform duration-300 transform hover:scale-105">
+                <button className="inline-flex items-center justify-center px-8 py-4 bg-emerald-600 text-white font-bold rounded-xl shadow-lg hover:bg-emerald-700 transition-transform duration-300 transform hover:scale-105">
                   Discover Your Pair
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </button>

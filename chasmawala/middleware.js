@@ -38,7 +38,7 @@ export async function middleware(req) {
   const token = req.cookies.get("auth-token")?.value;
 
   // Paths that are public and should be skipped by the logic below.
-  if (pathname === "/admin/login" || pathname === "/login" || pathname === "/unauthorized") {
+  if (pathname === "/admin/login" || pathname === "/account/login" || pathname === "/unauthorized") {
     return NextResponse.next();
   }
 
@@ -61,7 +61,7 @@ export async function middleware(req) {
   // Customer routes protection (profile/checkout)
   else if (["/profile", "/checkout"].includes(pathname)) {
     if (!payload) { // Any valid token is enough for customers
-      return handleRedirect(req, "/login");
+      return handleRedirect(req, "/account/login");
     }
   }
 

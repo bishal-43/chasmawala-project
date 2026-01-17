@@ -50,7 +50,7 @@ export default function ShippingPage() {
           <div className="p-6 bg-white rounded-lg shadow-sm">
             <MapPinIcon className="w-10 h-10 mx-auto text-blue-600" />
             <h3 className="mt-4 text-lg font-semibold text-gray-900">Pan-Nepal Delivery</h3>
-            <p className="mt-1 text-gray-600">We deliver to over 20,000 pincodes nationwide.</p>
+            <p className="mt-1 text-gray-600">We deliver to over 100s pincodes nationwide.</p>
           </div>
           <div className="p-6 bg-white rounded-lg shadow-sm">
             <ClockIcon className="w-10 h-10 mx-auto text-blue-600" />
@@ -105,8 +105,8 @@ export default function ShippingPage() {
             <div>
                 <h2 className="text-2xl font-bold text-gray-900">Shipping Charges</h2>
                 <ul className="mt-2 list-disc list-inside text-gray-600 space-y-1">
-                    <li><strong>Free Shipping:</strong> We offer free shipping on all prepaid orders of ₹999 or more.</li>
-                    <li><strong>Standard Charge:</strong> A flat fee of ₹50 is charged on all prepaid orders below ₹999.</li>
+                    <li><strong>Free Shipping:</strong> We offer free shipping on all prepaid orders of ₹1199 or more.</li>
+                    <li><strong>Standard Charge:</strong> A flat fee of ₹50 is charged on all prepaid orders below ₹1199.</li>
                     <li><strong>Cash on Delivery (COD):</strong> An additional handling fee of ₹50 is applicable to all COD orders.</li>
                 </ul>
             </div>

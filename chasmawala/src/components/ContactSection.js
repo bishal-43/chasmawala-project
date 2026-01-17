@@ -85,7 +85,7 @@ const ContactModal = ({ doctor, onClose }) => (
       <div className="mt-8 space-y-4">
         <a
           href={`tel:${doctor.phone}`}
-          className="flex items-center p-4 border rounded-lg hover:bg-gray-50 transition-colors w-full text-left"
+          className="flex items-center p-4 border rounded-xl hover:bg-gray-50 transition-colors w-full text-left"
         >
           <Phone className="text-blue-500" size={24} />
           <div className="ml-4">
@@ -98,7 +98,7 @@ const ContactModal = ({ doctor, onClose }) => (
           href={`https://wa.me/${doctor.phone}?text=Hello%20Dr.%20${doctor.name.split(" ").pop()}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center p-4 border rounded-lg hover:bg-gray-50 transition-colors w-full text-left"
+          className="flex items-center p-4 border rounded-xl hover:bg-gray-50 transition-colors w-full text-left"
         >
           <MessageCircle className="text-green-500" size={24} />
           <div className="ml-4">
@@ -206,14 +206,14 @@ const DoctorCard = ({ doctor, onConsultClick }) => (
       <div className="mt-auto pt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
         <button
           onClick={() => onConsultClick(doctor)}
-          className="flex items-center justify-center px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition-colors shadow-lg hover:shadow-indigo-300"
+          className="flex items-center justify-center px-6 py-3 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition-colors shadow-lg hover:shadow-indigo-300"
         >
           <MessageCircle className="mr-2" size={20} />
           Free Consultation
         </button>
         <Link
           href={`/doctors/${doctor.slug}`}
-          className="flex items-center justify-center px-4 py-3 bg-white text-gray-800 rounded-lg font-semibold border border-gray-300 hover:bg-gray-100 transition-colors"
+          className="flex items-center justify-center px-4 py-3 bg-white text-gray-800 rounded-xl font-semibold border border-gray-300 hover:bg-gray-100 transition-colors"
         >
           <User className="mr-2" size={20} />
           View Profile

@@ -151,7 +151,7 @@ export default function OfferBanner() {
 
   return (
     <section
-      className="relative w-full min-h-[400px] md:h-[500px] flex items-center justify-center bg-gradient-to-br from-emerald-600 via-teal-500 to-green-700 text-white overflow-hidden mt-16 sm:mt-20"
+      className="relative w-full min-h-[400px] md:h-[500px] flex items-center justify-center rounded-xl bg-gradient-to-br from-emerald-600 via-teal-500 to-green-700 text-white overflow-hidden mt-16 sm:mt-20"
       aria-labelledby="offer-heading"
     >
       {/* Background Image with Overlay */}
@@ -286,7 +286,7 @@ export default function OfferBanner() {
             </div>
             <div className="flex items-center space-x-2">
               <span className="text-lg">✓</span>
-              <span>30-Day Returns</span>
+              <span>14-Day Returns</span>
             </div>
             <div className="flex items-center space-x-2">
               <span className="text-lg">✓</span>
