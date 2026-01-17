@@ -4,14 +4,17 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { connectDB } from "@/config/db";
 import User from "@/models/userModel";
-import sgMail from '@sendgrid/mail';
+import { MailerSend, EmailParams, Sender, Recipient } from "mailersend";
 import crypto from 'crypto';
 import { z } from "zod";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+const mailerSend = new MailerSend({
+  apiKey: process.env.MAILERSEND_API_KEY,
+});
+
 
 const redis = new Redis({
   url: process.env.UPSTASH_REDIS_REST_URL,
@@ -44,7 +47,7 @@ export async function POST(req) {
         { status: 429 }
       );
     }
-    
+
     await connectDB();
 
     const body = await req.json();
@@ -83,18 +86,25 @@ export async function POST(req) {
 
     const verificationLink = `${process.env.BASE_URL}/verify-email/${verifyToken}`;
 
-    const msg = {
-      to: email,
-      from: process.env.SENDER_EMAIL, // Your verified SendGrid sender
-      subject: 'Verify Your Email Address',
-      html: `
-        <h1>Welcome to Chasmawala!</h1>
-        <p>Click the link below to verify your email address. This link will expire in 1 hour.</p>
-        <a href="${verificationLink}" style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Verify Email</a>
-      `,
-    };
+    const sentFrom = new Sender(process.env.SENDER_EMAIL, "Chasmawala");
+    const recipients = [new Recipient(email)];
 
-    await sgMail.send(msg);
+    const emailParams = new EmailParams()
+      .setFrom(sentFrom)
+      .setTo(recipients)
+      .setSubject("Verify Your Email Address")
+      .setHtml(`
+    <h1>Welcome to Chasmawala!</h1>
+    <p>Click the link below to verify your email address. This link will expire in 1 hour.</p>
+    <a href="${verificationLink}" 
+       style="background-color: #007bff; color: white; padding: 10px 20px; 
+              text-decoration: none; border-radius: 5px;">
+      Verify Email
+    </a>
+  `)
+      .setText(`Verify your email: ${verificationLink}`);
+
+    await mailerSend.email.send(emailParams);
 
 
     return NextResponse.json(

@@ -31,7 +31,7 @@ const CartPage = () => {
               />
               <div className="ml-4">
                 <h3 className="text-lg font-bold">{item.name}</h3>
-                <p className="text-gray-700">${item.price}</p>
+                <p className="text-gray-700">NPR{item.price}</p>
                 <div className="flex items-center mt-2">
                   <button
                     onClick={() => updateQuantity(item.productId, item.quantity - 1)}
