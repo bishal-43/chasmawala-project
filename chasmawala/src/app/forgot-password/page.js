@@ -108,10 +108,11 @@ export default function ForgotPasswordPage() {
 
                     <p className="text-center text-gray-500 mt-6 text-sm">
                         Remember your password?{' '}
-                        <Link href="/account/login" legacyBehavior>
-                            <a className="text-emerald-500 hover:underline font-semibold">
-                                Back to Login
-                            </a>
+                        <Link
+                            href="/account/login"
+                            className="text-emerald-500 hover:underline font-semibold"
+                        >
+                            Back to Login
                         </Link>
                     </p>
                 </div>

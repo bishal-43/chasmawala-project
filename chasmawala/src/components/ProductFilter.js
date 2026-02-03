@@ -1,195 +1,220 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
-import { FiRefreshCw } from "react-icons/fi";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import { X, RotateCcw, SlidersHorizontal, Search, Tag } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import Slider from "rc-slider"; 
+import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 
-/**
- * A client-side component to filter products by category, brand, and price.
- * It receives filter options and an initial state from its parent,
- * and calls a callback function whenever the filters are changed.
- *
- * @param {object} options - Contains available {categories, brands, priceRange}.
- * @param {function} onFilterChange - Callback function to execute with the new filters.
- * @param {object} initialFilters - The initial state for the filters, usually from URL params.
- */
 const ProductFilter = ({
-  options = {},
+  products = [],
   onFilterChange = () => {},
   initialFilters = {},
 }) => {
-  // Destructure options with default values to prevent errors
-  const {
-    categories = [],
-    brands = [],
-    priceRange: initialPriceRange = [0, 10000],
-  } = options;
+  const pathname = usePathname();
+  const router = useRouter();
+  const isInitialMount = useRef(true);
+  const updateTimeoutRef = useRef(null);
 
-  // ✅ Initialize state by merging initialFilters from props with default values.
-  // This is the key fix to make MegaMenu links work.
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [searchCategory, setSearchCategory] = useState("");
+  const [searchBrand, setSearchBrand] = useState("");
+
+  // 1. 🚀 DYNAMIC EXTRACTION
+  const { availableCategories, availableBrands, absoluteMaxPrice } = useMemo(() => {
+    if (!products || products.length === 0) {
+      return { availableCategories: [], availableBrands: [], absoluteMaxPrice: 10000 };
+    }
+
+    const brandsSet = new Set();
+    const catsSet = new Set();
+    let max = 0;
+
+    products.forEach((p) => {
+      // Normalizing to handle potential case issues
+      if (p.brand) brandsSet.add(p.brand.trim());
+      if (p.category) catsSet.add(p.category.trim());
+      const pPrice = Number(p.price) || 0;
+      if (pPrice > max) max = pPrice;
+    });
+
+    return {
+      availableCategories: Array.from(catsSet).sort(),
+      availableBrands: Array.from(brandsSet).sort(),
+      absoluteMaxPrice: Math.ceil(max) || 1000,
+    };
+  }, [products]);
+
+  // 2. STATE MANAGEMENT
   const [filters, setFilters] = useState({
     categories: initialFilters.categories || [],
     brands: initialFilters.brands || [],
-    minPrice: initialFilters.minPrice ?? initialPriceRange[0],
-    maxPrice: initialFilters.maxPrice ?? initialPriceRange[1],
+    maxPrice: initialFilters.maxPrice ?? absoluteMaxPrice,
   });
 
+  // Local UI state for the slider handle (prevents jumping during API fetch)
+  const [maxPriceUI, setMaxPriceUI] = useState(filters.maxPrice);
 
+  // Sync state if products load for the first time
+  useEffect(() => {
+    if (isInitialMount.current && products.length > 0) {
+      const targetMax = initialFilters.maxPrice ?? absoluteMaxPrice;
+      setFilters(prev => ({ ...prev, maxPrice: targetMax }));
+      setMaxPriceUI(targetMax);
+    }
+  }, [absoluteMaxPrice, initialFilters.maxPrice, products.length]);
 
-  const pathname = usePathname();
-  const router = useRouter();
-
-  const isInitialMount = useRef(true);
-
-  // ✅ When the available price range from the API changes,
-  // update the filter's max price ONLY if it wasn't set by the user via URL.
+  // 3. 🚀 PERFORMANCE: DEBOUNCED UPDATE
   useEffect(() => {
     if (isInitialMount.current) {
-      isInitialMount.current = false; // Set it to false for subsequent renders
-      return; // Exit the effect
-    }
-  // 1. Call the parent function to refetch products
-  onFilterChange(filters);
-
-  // 2. Update the URL query string
-  const params = new URLSearchParams();
-  filters.categories.forEach(c => params.append('category', c));
-  filters.brands.forEach(b => params.append('brand', b));
-
-  if (filters.minPrice > initialPriceRange[0]) {
-        params.set('minPrice', filters.minPrice);
+      isInitialMount.current = false;
+      return;
     }
 
-  if (filters.maxPrice < initialPriceRange[1]) {
-     params.set('maxPrice', filters.maxPrice);
-  }
-  
-  // router.push will update the URL without a full page reload
-  router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    if (!products.length) return;
 
-}, [filters, onFilterChange, pathname, router, initialPriceRange]);
+    if (updateTimeoutRef.current) clearTimeout(updateTimeoutRef.current);
 
-  // Toggles an item in a filter array (categories or brands).
-  const toggle = (key, value) => {
+    updateTimeoutRef.current = setTimeout(() => {
+      onFilterChange(filters);
+
+      const params = new URLSearchParams();
+      filters.categories.forEach(c => params.append('category', c));
+      filters.brands.forEach(b => params.append('brand', b));
+
+      if (filters.maxPrice < absoluteMaxPrice) {
+        params.set('maxPrice', filters.maxPrice);
+      }
+
+      router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    }, 400);
+
+    return () => clearTimeout(updateTimeoutRef.current);
+  }, [filters, onFilterChange, pathname, router, absoluteMaxPrice]);
+
+  const toggle = useCallback((key, value) => {
     setFilters((prev) => {
       const current = prev[key] || [];
-      const isPresent = current.includes(value);
-      const newValues = isPresent
+      const newValues = current.includes(value)
         ? current.filter((v) => v !== value)
         : [...current, value];
       return { ...prev, [key]: newValues };
     });
+  }, []);
+
+  const handleMaxPriceChange = (value) => {
+    setMaxPriceUI(value);
+    setFilters(prev => ({ ...prev, maxPrice: value }));
   };
 
-  // Updates the max price from the range slider.
-  const handlePriceChange = (value) => {
-    setFilters(prev => ({ 
-      ...prev, 
-      minPrice: value[0],
-      maxPrice: value[1] 
-    }));
-  };
-
-  // Resets all filters to their default state.
   const resetAll = () => {
-    setFilters({
-      categories: [],
-      brands: [],
-      minPrice: initialPriceRange[0],
-      maxPrice: initialPriceRange[1],
-    });
+    setFilters({ categories: [], brands: [], maxPrice: absoluteMaxPrice });
+    setMaxPriceUI(absoluteMaxPrice);
+    setSearchCategory("");
+    setSearchBrand("");
   };
 
+  const activeFilterCount = filters.categories.length + filters.brands.length + (filters.maxPrice < absoluteMaxPrice ? 1 : 0);
 
-  if (!initialPriceRange || initialPriceRange.length !== 2) {
-    return (
-      <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm animate-pulse">
-        <div className="h-6 bg-gray-200 rounded w-1/3 mb-4"></div>
-        <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
-        <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
-        <div className="h-4 bg-gray-200 rounded w-2/3"></div>
-      </div>
-    );
-  }
+  const CheckboxItem = ({ label, checked, onChange }) => (
+    <label className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 cursor-pointer group transition-colors">
+      <input
+        type="checkbox"
+        className="h-4.5 w-4.5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+        checked={checked}
+        onChange={onChange}
+      />
+      <span className="text-sm text-slate-700 group-hover:text-indigo-600 transition-colors font-medium">{label}</span>
+    </label>
+  );
+
+  const FilterContent = () => (
+    <div className="flex flex-col h-full space-y-8">
+      {/* Category Section */}
+      <section>
+        <div className="flex items-center gap-2 mb-3">
+          <Tag size={16} className="text-indigo-600" />
+          <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">Categories</h3>
+        </div>
+        {availableCategories.length > 6 && (
+          <input
+            type="text"
+            placeholder="Search categories..."
+            className="w-full mb-2 px-3 py-1.5 text-xs border border-slate-200 rounded-md focus:ring-1 focus:ring-indigo-500 outline-none"
+            onChange={(e) => setSearchCategory(e.target.value)}
+          />
+        )}
+        <div className="space-y-1 max-h-48 overflow-y-auto custom-scrollbar">
+          {availableCategories.filter(c => c.toLowerCase().includes(searchCategory.toLowerCase())).map(c => (
+            <CheckboxItem key={c} label={c} checked={filters.categories.includes(c)} onChange={() => toggle("categories", c)} />
+          ))}
+        </div>
+      </section>
+
+      {/* Brand Section */}
+      <section>
+        <div className="flex items-center gap-2 mb-3">
+          <Tag size={16} className="text-indigo-600" />
+          <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">Brands</h3>
+        </div>
+        {availableBrands.length > 6 && (
+          <input
+            type="text"
+            placeholder="Search brands..."
+            className="w-full mb-2 px-3 py-1.5 text-xs border border-slate-200 rounded-md focus:ring-1 focus:ring-indigo-500 outline-none"
+            onChange={(e) => setSearchBrand(e.target.value)}
+          />
+        )}
+        <div className="space-y-1 max-h-48 overflow-y-auto custom-scrollbar">
+          {availableBrands.filter(b => b.toLowerCase().includes(searchBrand.toLowerCase())).map(b => (
+            <CheckboxItem key={b} label={b} checked={filters.brands.includes(b)} onChange={() => toggle("brands", b)} />
+          ))}
+        </div>
+      </section>
+
+      {/* Price Section */}
+      <section className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+        <h3 className="text-xs font-bold text-slate-500 uppercase mb-4">Max Price: ₹{maxPriceUI.toLocaleString()}</h3>
+        <Slider
+          min={0}
+          max={absoluteMaxPrice}
+          value={maxPriceUI}
+          onChange={handleMaxPriceChange}
+          trackStyle={{ backgroundColor: '#4f46e5' }}
+          handleStyle={{ borderColor: '#4f46e5', backgroundColor: '#fff' }}
+        />
+      </section>
+
+      <button onClick={resetAll} className="flex items-center justify-center gap-2 py-2 text-sm text-slate-500 hover:text-red-500 transition-colors">
+        <RotateCcw size={14} /> Reset Filters
+      </button>
+    </div>
+  );
 
   return (
-    <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
-      <div className="flex justify-between items-center pb-4 border-b border-gray-200 mb-4">
-        <h2 className="font-semibold text-lg text-gray-800">Filters</h2>
-        <button
-          onClick={resetAll}
-          className="text-sm text-blue-600 hover:text-blue-800 flex items-center transition-colors duration-200"
-        >
-          <FiRefreshCw className="mr-1" /> Reset
-        </button>
+    <>
+      <aside className="hidden lg:block w-72 shrink-0 border-r border-slate-100 pr-6">
+        <div className="sticky top-24">
+           <FilterContent />
+        </div>
+      </aside>
+
+      <div className="lg:hidden fixed bottom-6 right-6 z-50">
+        <button onClick={() => setIsDrawerOpen(true)} className="bg-indigo-600 text-white p-4 rounded-full shadow-xl"><SlidersHorizontal /></button>
       </div>
 
-      {/* Categories Section */}
-      <div className="mb-6">
-        <h3 className="text-sm font-medium text-gray-700 mb-2">Categories</h3>
-        <div className="space-y-2 max-h-48 overflow-y-auto pr-2">
-          {categories.map((c) => (
-            <label key={c} className="flex items-center space-x-3 text-sm cursor-pointer">
-              <input
-                type="checkbox"
-                checked={filters.categories.includes(c)}
-                onChange={() => toggle("categories", c)}
-                className="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
-              />
-              <span className="text-gray-600">{c}</span>
-            </label>
-          ))}
+      {isDrawerOpen && (
+        <div className="fixed inset-0 z-[100] lg:hidden">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setIsDrawerOpen(false)} />
+          <div className="absolute right-0 top-0 h-full w-80 bg-white p-6 shadow-xl animate-in slide-in-from-right">
+            <div className="flex justify-between items-center mb-6">
+               <h2 className="text-xl font-bold">Filters</h2>
+               <button onClick={() => setIsDrawerOpen(false)}><X /></button>
+            </div>
+            <FilterContent />
+          </div>
         </div>
-      </div>
-
-      {/* Brands Section */}
-      <div className="mb-6">
-        <h3 className="text-sm font-medium text-gray-700 mb-2">Brands</h3>
-        <div className="space-y-2 max-h-48 overflow-y-auto pr-2">
-          {brands.map((b) => (
-            <label key={b} className="flex items-center space-x-3 text-sm cursor-pointer">
-              <input
-                type="checkbox"
-                checked={filters.brands.includes(b)}
-                onChange={() => toggle("brands", b)}
-                className="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
-              />
-              <span className="text-gray-600">{b}</span>
-            </label>
-          ))}
-        </div>
-      </div>
-
-      {/* Price Range Section */}
-      <div>
-        <h3 className="text-sm font-medium text-gray-700 mb-2">Price Range</h3>
-        <div className="flex justify-between text-sm text-gray-600 mb-2 font-medium">
-          <span>₹{filters.minPrice}</span>
-          <span>₹{filters.maxPrice}</span>
-        </div>
-        
-        <Slider
-            range // This prop enables the two-handle range mode
-            min={initialPriceRange[0]}
-            max={initialPriceRange[1]}
-            value={[filters.minPrice, filters.maxPrice]}
-            onChange={handlePriceChange}
-            allowCross={false} // Prevents handles from crossing each other
-            step={50} // Optional: define the increment step
-            trackStyle={{ backgroundColor: '#059669', height: 6 }}
-            handleStyle={{
-              borderColor: '#059669',
-              height: 18,
-              width: 18,
-              marginTop: -6,
-              backgroundColor: 'white',
-              opacity: 1,
-            }}
-            railStyle={{ backgroundColor: '#d1d5db', height: 6 }}
-        />
-      </div>
-    </div>
+      )}
+    </>
   );
 };
 

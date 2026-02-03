@@ -9,7 +9,7 @@ export default function ProtectedAdminLayout({ children }) {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="grid min-h-screen w-full md:grid-cols-[240px_1fr] lg:grid-cols-[280px_1fr]">
+    <div className="grid h-screen w-full md:grid-cols-[240px_1fr] lg:grid-cols-[280px_1fr]">
       {/* Sidebar Component */}
       <Sidebar isSidebarOpen={isSidebarOpen} setSidebarOpen={setSidebarOpen} />
 
@@ -25,3 +25,4 @@ export default function ProtectedAdminLayout({ children }) {
     </div>
   );
 }
+

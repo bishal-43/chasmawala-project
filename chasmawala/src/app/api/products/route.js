@@ -14,6 +14,13 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+const productSchema = z.object({
+  name: z.string().min(1).max(200),
+  description: z.string().min(10).max(2000),
+  price: z.string().transform(Number).pipe(z.number().positive()),
+  category: z.string().min(1),
+});
+
 export async function POST(req) {
   await connectDB();
 
@@ -29,9 +36,18 @@ export async function POST(req) {
   try {
     // ✅ 2. Parse multipart form-data
     const formData = await req.formData();
-    const file = formData.get("image");
+    
+
+    // Validate input
+    const validatedData = productSchema.parse({
+      name: formData.get("name"),
+      description: formData.get("description"),
+      price: formData.get("price"),
+      category: formData.get("category"),
+    });
 
     let imageUrl = "";
+    const file = formData.get("image");
     if (file) {
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
@@ -39,6 +55,10 @@ export async function POST(req) {
 
       const uploadResponse = await cloudinary.uploader.upload(base64, {
         folder: "chasmawala_products",
+        transformation: [
+          { width: 800, height: 800, crop: "limit" },
+          { quality: "auto:good" }
+        ]
       });
 
       imageUrl = uploadResponse.secure_url;
@@ -46,12 +66,12 @@ export async function POST(req) {
 
     // ✅ 3. Save product
     const product = new Product({
-      name: formData.get("name"),
-      description: formData.get("description"),
-      price: formData.get("price"),
-      category: formData.get("category"),
+      ...validatedData,
+      
       image: imageUrl,
-      slug: slugify(formData.get("name"), { lower: true, strict: true })
+      brand: formData.get("brand") || "Generic Brand",
+      frameShape: formData.get("frameShape"),
+      slug: slugify(validatedData.name, { lower: true, strict: true }),
     });
 
     const saved = await product.save();
@@ -59,6 +79,9 @@ export async function POST(req) {
 
   } catch (err) {
     console.error('❌ Upload error:', err);
+    if (err instanceof z.ZodError) {
+      return NextResponse.json({ error: 'Invalid input', details: err.errors }, { status: 400 });
+    }
     return NextResponse.json({ error: 'Failed to upload product' }, { status: 500 });
   }
 }
@@ -70,6 +93,11 @@ export async function GET(req) {
 
   const { searchParams } = new URL(req.url);
 
+  // Pagination
+  const page = parseInt(searchParams.get("page") || "1");
+  const limit = parseInt(searchParams.get("limit") || "20");
+  const skip = (page - 1) * limit;
+
   const categories = searchParams.getAll("category");
   const brands = searchParams.getAll("brand");
   const frameShapes = searchParams.getAll("frameShape");
@@ -78,47 +106,87 @@ export async function GET(req) {
 
   // Build query
   const query = {};
+  let sortOptions = {};
+  let limitOverride = null;
 
   if (slug) {
     // Convert slug (contact-lenses -> contact lenses)
-    const formatted = slug.replace(/-/g, " ");
-    const slugRegex = new RegExp(`^${formatted}$`, "i");
+    const formatted = slug.replace(/-/g, " ").toLowerCase();
+    
 
     query.$or = [
-      { category: slugRegex }, // match category
-      { brand: slugRegex },    // match brand
+      { category: formatted },
+      { brand: formatted },
     ];
   } else {
     // Normal filtering logic
-    if (categories.length > 0 && !categories.includes("new-arrivals")) {
-      query.category = { $in: categories };
+    if (categories.includes("new-arrivals")) {
+      sortOptions = { createdAt: -1 };
+      limitOverride = 10;
+      
+      const filteredCategories = categories.filter(c => c !== "new-arrivals");
+      if (filteredCategories.length > 0) {
+        query.category = { $in: filteredCategories.map(c => c.toLowerCase()) };
+      }
+    } else if (categories.length > 0) {
+      query.category = { $in: categories.map(c => c.toLowerCase()) };
     }
+
     if (brands.length > 0) {
-      query.brand = { $in: brands };
+      query.brand = { $in: brands.map(b => b.toLowerCase()) };
     }
     if (frameShapes.length > 0) {
-      query.frameShape = { $in: frameShapes };
+      query.frameShape = { $in: frameShapes.map(f => f.toLowerCase()) };
     }
     if (maxPrice) {
       query.price = { $lte: Number(maxPrice) };
     }
   }
 
-  try {
-    let products;
 
-    if (!slug && categories.includes("new-arrivals")) {
-      // Special case: new arrivals
-      products = await Product.find({})
-        .sort({ createdAt: -1 })
-        .limit(10)
-        .select('name price image category brand slug');
-    } else {
-      products = await Product.find(query)
-      .select('name price image category brand slug');
+  try {
+    // Build query
+    let queryBuilder = Product.find(query)
+      .select('name price image category brand slug frameShape stock rating')
+      .lean();
+
+    if (Object.keys(sortOptions).length > 0) {
+      queryBuilder = queryBuilder.sort(sortOptions);
     }
 
-    return NextResponse.json(products);
+    // Execute queries in parallel for better performance
+    let products, total;
+
+    if (limitOverride) {
+      // New arrivals - no pagination
+      products = await queryBuilder.limit(limitOverride);
+      total = null;
+    } else {
+      // Regular query with pagination
+      [products, total] = await Promise.all([
+        queryBuilder.skip(skip).limit(limit),
+        Product.countDocuments(query)
+      ]);
+    }
+
+    const response = {
+      products,
+      ...(total !== null && {
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit)
+        }
+      })
+    };
+
+    return NextResponse.json(response, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600'
+      }
+    });
+
   } catch (err) {
     console.error("❌ Products fetch error:", err);
     return NextResponse.json(

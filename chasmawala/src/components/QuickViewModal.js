@@ -8,7 +8,7 @@ import Link from "next/link";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useQuickView } from "@/contexts/QuickViewContext";
-import { FiX, FiShoppingCart, FiHeart, FiCheckCircle } from "react-icons/fi";
+import { FiX, FiShoppingBag, FiHeart, FiCheckCircle } from "react-icons/fi";
 
 export default function QuickViewModal() {
   const { cart, addToCart } = useCart();
@@ -140,7 +140,7 @@ export default function QuickViewModal() {
                 </>
               ) : (
                 <>
-                  <FiShoppingCart className="mr-2" /> Add to Cart
+                  <FiShoppingBag className="mr-2" /> Add to Cart
                 </>
               )}
             </button>

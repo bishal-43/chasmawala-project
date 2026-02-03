@@ -4,7 +4,7 @@ import React from "react";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useCart } from "@/contexts/CartContext";
 import Image from "next/image";
-import { ShoppingCart, Trash2 } from "lucide-react";
+import { ShoppingBag, Trash2 } from "lucide-react";
 
 export default function WishlistPage() {
   const { wishlistItems = [], removeFromWishlist } = useWishlist() || {}; // ✅ Corrected variable name
@@ -33,7 +33,7 @@ export default function WishlistPage() {
                   onClick={() => addToCart(product)} 
                   className="p-2 bg-green-500 text-white rounded-md hover:bg-green-600 flex items-center space-x-2"
                 >
-                  <ShoppingCart className="w-5 h-5" />
+                  <ShoppingBag className="w-5 h-5" />
                   <span>Add to Cart</span>
                 </button>
 

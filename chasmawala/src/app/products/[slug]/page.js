@@ -7,7 +7,7 @@ import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "@/contexts/CartContext";
-import { CheckCircle, ShoppingCart } from "lucide-react";
+import { CheckCircle, ShoppingBag, ShoppingCart } from "lucide-react";
 
 export default function ProductDetailsPage() {
   const { slug } = useParams();
@@ -47,7 +47,7 @@ export default function ProductDetailsPage() {
     <div className="container mx-auto max-w-4xl p-4 md:p-8 my-10">
       <div className="grid md:grid-cols-2 gap-8 md:gap-12 bg-white p-8 rounded-lg shadow-md">
         {/* Image Column */}
-        <div className="bg-gray-100 rounded-lg flex items-center justify-center p-4">
+        <div className="bg-gray-100 rounded-lg flex items-center justify-center p-4 h-[420px]">
           <Image
             src={product.image || "/images/default-product.jpg"}
             alt={product.name}
@@ -77,7 +77,7 @@ export default function ProductDetailsPage() {
               {isAdded ? (
                 <CheckCircle size={20} className="mr-2" />
               ) : (
-                <ShoppingCart size={20} className="mr-2" />
+                <ShoppingBag size={20} className="mr-2" />
               )}
               {isAdded ? "Added to Cart!" : "Add to Cart"}
             </button>
@@ -90,3 +90,68 @@ export default function ProductDetailsPage() {
     </div>
   );
 }
+
+
+
+// import Image from "next/image";
+// import Link from "next/link";
+// import { notFound } from "next/navigation";
+// import AddToCartButton from "./AddtoCartButton";
+
+// async function getProduct(slug) {
+//   const res = await fetch(
+//     `${process.env.NEXT_PUBLIC_BASE_URL}/api/products/${slug}`,
+//     { cache: "no-store" }
+//   );
+
+//   if (!res.ok) return null;
+//   return res.json();
+// }
+
+// export default async function ProductDetailsPage({ params }) {
+//   const product = await getProduct(params.slug);
+
+//   if (!product) notFound();
+
+//   return (
+//     <div className="container mx-auto max-w-4xl p-4 md:p-8 my-10">
+//       <div className="grid md:grid-cols-2 gap-8 bg-white p-8 rounded-lg shadow-md">
+
+//         <div className="bg-gray-100 rounded-lg flex items-center justify-center p-4 h-[420px]">
+//           <Image
+//             src={product.image || "/images/default-product.jpg"}
+//             alt={product.name}
+//             width={400}
+//             height={400}
+//             className="object-contain"
+//           />
+//         </div>
+
+//         <div className="space-y-4">
+//           <span className="text-sm font-semibold text-emerald-600 uppercase">
+//             {product.brand}
+//           </span>
+
+//           <h1 className="text-3xl font-bold">{product.name}</h1>
+
+//           <p className="text-gray-600">
+//             {product.description || "No description available."}
+//           </p>
+
+//           <p className="text-3xl font-bold">
+//             ₹{product.price?.toLocaleString("en-IN")}
+//           </p>
+
+//           <AddToCartButton product={product} />
+
+//           <Link
+//             href="/collections"
+//             className="text-sm text-emerald-600 hover:underline"
+//           >
+//             ← Back to collections
+//           </Link>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }

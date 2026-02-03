@@ -294,7 +294,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Menu, X, ShoppingCart, Heart, User, Search, Eye, Phone } from "lucide-react";
+import { Menu, X, ShoppingBag, Heart, User, Search, Eye, Phone } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useAuth } from "@/contexts/authContext";
@@ -555,7 +555,7 @@ const ActionIcons = ({ user, logout }) => {
                 className="relative p-2 text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
                 aria-label="Shopping cart"
             >
-                <ShoppingCart size={22} />
+                <ShoppingBag size={22} />
                 {cartCount > 0 && <Badge count={cartCount} />}
             </Link>
 
@@ -765,7 +765,7 @@ const MobileNav = ({ isOpen, user, logout, onClose }) => {
                                 onClick={onClose}
                                 className="flex items-center space-x-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-emerald-600 dark:hover:text-emerald-400 p-3 rounded-lg font-medium transition-colors"
                             >
-                                <ShoppingCart size={20} />
+                                <ShoppingBag size={20} />
                                 <span>My Orders</span>
                             </Link>
                             <button
