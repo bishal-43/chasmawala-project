@@ -12,11 +12,11 @@ export const metadata = {
   openGraph: {
     title: "Chasmawala – Buy Eyewear Online",
     description: "Premium eyewear for daily use. Shop now!",
-    url: "https://your-site.vercel.app",
+    url: "https://chasmawala.com.np",
     siteName: "Chasmawala",
     images: [
       {
-        url: "https://your-site.vercel.app/og-image1.jpg",
+        url: "https://chasmawala.com.np/og-image1.jpg",
         width: 1200,
         height: 630,
         alt: "Chasmawala Eyewear Store",
@@ -29,7 +29,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "Chasmawala – Buy Eyewear Online",
     description: "Premium eyewear at best prices",
-    images: ["https://your-site.vercel.app/og-image.jpg"],
+    images: ["https://chasmawala.com.np/og-image1.jpg"],
   },
 };
   
