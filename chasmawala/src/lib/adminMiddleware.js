@@ -1,3 +1,5 @@
+// src/lib/adminMiddleware.js
+
 import { NextResponse } from "next/server";
 import { connectDB } from "@/config/db";
 import { verifyTokenAndGetUser } from "@/lib/auth"; // Import the correct function

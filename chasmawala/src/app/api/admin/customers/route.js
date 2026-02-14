@@ -2,7 +2,7 @@
 
 import { NextResponse } from "next/server";
 import { connectDB } from "@/config/db";
-import User from "@/models/userModel"; // Assuming your user model is named User
+import User from "@/models/userModel"; 
 
 export async function GET() {
   try {

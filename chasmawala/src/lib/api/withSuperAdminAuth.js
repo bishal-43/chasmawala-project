@@ -1,3 +1,5 @@
+// src/lib/api/withSuperadminAuth.js
+
 import { NextResponse } from "next/server";
 import { verifyTokenAndGetUser } from "@/lib/auth"; // <-- Import new function
 import { connectDB } from "@/config/db";

@@ -106,3 +106,4 @@ export const GET = withSuperadminAuth(getDoctorHandler);
 export const PUT = withSuperadminAuth(updateDoctorHandler);
 export const DELETE = withSuperadminAuth(deleteDoctorHandler);
 
+ 

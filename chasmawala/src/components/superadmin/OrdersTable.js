@@ -25,7 +25,7 @@ const OrderStatusBadge = ({ status }) => {
 const OrderRow = ({ order }) => (
   <tr key={order._id} className="border-b hover:bg-gray-50">
     <td className="px-4 py-2 border font-mono text-xs">{order._id}</td>
-    <td className="px-4 py-2 border">{order.user?.name || "N/A"}</td>
+    <td className="px-4 py-2 border">{order.userId?.name || "N/A"}</td>
     <td className="px-4 py-2 border">₹{order.totalAmount?.toFixed(2) || "0.00"}</td>
     <td className="px-4 py-2 border">
       <OrderStatusBadge status={order.status} />

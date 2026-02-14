@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import { connectDB } from "@/config/db";
-import Order from "@models/orderModel";
+import Order from "@/models/orderModel";
 import User from "@/models/userModel";
 
 const JWT_SECRET = process.env.JWT_SECRET ;

@@ -7,7 +7,7 @@ import StoreDisplayWrapper from "./components/StoreDisplayWrapper";
 
 export const metadata = {
   title: "Our Store | Chasmawala",
-  description: "Visit our flagship store in Ramanand Chowk, Janakpur. Shop our latest eyewear collections in person.",
+  description: "Visit our flagship store in Murli Chowk, Janakpur. Shop our latest eyewear collections in person.",
 };
 
 

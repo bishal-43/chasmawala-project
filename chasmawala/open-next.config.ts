@@ -1,7 +1,13 @@
-// default open-next.config.ts file created by @opennextjs/cloudflare
-import { defineCloudflareConfig } from "@opennextjs/cloudflare/config";
-import r2IncrementalCache from "@opennextjs/cloudflare/overrides/incremental-cache/r2-incremental-cache";
+export default {
+  outDir: ".open-next",
+  entry: "./",
+  cloudflare: {
+    compatibilityDate: "2025-10-19",
+    functions: true,
+  },
+  env: {
+    NODE_ENV: "production",
+  },
+};
 
-export default defineCloudflareConfig({
-	incrementalCache: r2IncrementalCache,
-});
+
