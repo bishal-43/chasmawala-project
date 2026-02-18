@@ -9,14 +9,18 @@ const __dirname = path.dirname(__filename);
 const securityHeaders = [
   {
     key: "Content-Security-Policy",
-    value:
-      "default-src 'self'; " +
-      "img-src 'self' https: data:; " +
-      "script-src 'self' 'unsafe-inline' https:; " +
-      "style-src 'self' 'unsafe-inline' https:; " +
-      "font-src 'self' https: data:; " +
-      "connect-src 'self' https:; " +
-      "frame-ancestors 'none';",
+    value: [
+      "default-src 'self'",
+      "base-uri 'self'",
+      "object-src 'none'",
+      "frame-ancestors 'none'",
+      "img-src 'self' data: https://placehold.co https://res.cloudinary.com https://images.unsplash.com",
+      "font-src 'self' data:",
+      "script-src 'self' https://vercel.live",
+      "style-src 'self'",
+      "connect-src 'self' https://api.yourdomain.com",
+      "upgrade-insecure-requests",
+    ].join("; "),
   },
   { key: "X-Frame-Options", value: "DENY" },
   { key: "X-Content-Type-Options", value: "nosniff" },
