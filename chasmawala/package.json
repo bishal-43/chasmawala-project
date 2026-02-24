@@ -55,6 +55,7 @@
     "react-redux": "^9.2.0",
     "react-slick": "^0.30.3",
     "redux": "^5.0.1",
+    "resend": "^6.9.2",
     "slick-carousel": "^1.8.1",
     "slugify": "^1.6.6",
     "sonner": "^2.0.7",

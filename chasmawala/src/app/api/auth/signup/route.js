@@ -9,11 +9,10 @@ import crypto from 'crypto';
 import { z } from "zod";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
+import { Resend } from "resend";
 
 
-const mailerSend = new MailerSend({
-  apiKey: process.env.MAILERSEND_API_KEY,
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 
 const redis = new Redis({
@@ -86,25 +85,24 @@ export async function POST(req) {
 
     const verificationLink = `${process.env.BASE_URL}/verify-email/${verifyToken}`;
 
-    const sentFrom = new Sender(process.env.SENDER_EMAIL, "Chasmawala");
-    const recipients = [new Recipient(email)];
+    // const sentFrom = new Sender(process.env.SENDER_EMAIL, "Chasmawala");
+    // const recipients = [new Recipient(email)];
 
-    const emailParams = new EmailParams()
-      .setFrom(sentFrom)
-      .setTo(recipients)
-      .setSubject("Verify Your Email Address")
-      .setHtml(`
-    <h1>Welcome to Chasmawala!</h1>
-    <p>Click the link below to verify your email address. This link will expire in 1 hour.</p>
-    <a href="${verificationLink}" 
-       style="background-color: #007bff; color: white; padding: 10px 20px; 
-              text-decoration: none; border-radius: 5px;">
-      Verify Email
-    </a>
-  `)
-      .setText(`Verify your email: ${verificationLink}`);
+    await resend.emails.send({
+      from: `Chasmawala <${process.env.SENDER_EMAIL}>`,
+      to: email,
+      subject: "Verify your email address",
+      html: `
+        <h2>Welcome to Chasmawala 👓</h2>
+        <p>Click the link below to verify your email:</p>
+        <a href="${verificationLink}" 
+           style="background:#2563eb;color:white;padding:10px 16px;border-radius:6px;text-decoration:none;">
+          Verify Email
+        </a>
+        <p>This link expires in 1 hour.</p>
+      `,
+    });
 
-    await mailerSend.email.send(emailParams);
 
 
     return NextResponse.json(
@@ -120,12 +118,23 @@ export async function POST(req) {
       await User.findByIdAndDelete(newUser._id);
     }
 
-    // Check if it was a SendGrid error for a more specific message
-    if (error.response) {
-      console.error('SendGrid Error Body:', error.response.body);
-      return NextResponse.json({ error: "Could not send verification email. Please try again." }, { status: 500 });
+    // MailerSend error
+    if (error?.response?.body) {
+      console.error("MailerSend Error:", error.response.body);
+
+      const message =
+        error.response.body?.message ||
+        "Email service limit reached. Please try again later.";
+
+      return NextResponse.json(
+        { error: message },
+        { status: 429 } // Rate limit / provider limit
+      );
     }
 
-    return NextResponse.json({ error: "An internal server error occurred." }, { status: 500 });
+
+
+
+    return NextResponse.json({ error: "Signup failed. Please try again later." }, { status: 500 });
   }
 }
