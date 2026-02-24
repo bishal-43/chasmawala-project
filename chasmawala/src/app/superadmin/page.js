@@ -75,13 +75,13 @@ const quickActions = [
     description: "Track and manage orders",
     gradient: "from-amber-500 to-orange-500"
   },
-  { 
-    href: "/superadmin/analytics", 
-    icon: Activity, 
-    label: "Analytics",
-    description: "View detailed insights",
-    gradient: "from-cyan-500 to-blue-500"
-  },
+  // { 
+  //   href: "/superadmin/analytics", 
+  //   icon: Activity, 
+  //   label: "Analytics",
+  //   description: "View detailed insights",
+  //   gradient: "from-cyan-500 to-blue-500"
+  // },
 ];
 
 function EnhancedStatCard({ label, value, icon: Icon, gradient, shadowColor, trend, isRevenue, index }) {

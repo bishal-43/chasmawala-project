@@ -11,14 +11,26 @@ const securityHeaders = [
     key: "Content-Security-Policy",
     value: [
       "default-src 'self'",
+      "frame-src 'self' https://www.google.com https://www.google.com/maps",
       "base-uri 'self'",
       "object-src 'none'",
       "frame-ancestors 'none'",
-      "img-src 'self' data: https://placehold.co https://res.cloudinary.com https://images.unsplash.com",
-      "font-src 'self' data:",
-      "script-src 'self' https://vercel.live",
-      "style-src 'self'",
-      "connect-src 'self' https://api.yourdomain.com",
+
+      // Images
+      "img-src 'self' data: blob: https://placehold.co https://res.cloudinary.com https://images.unsplash.com",
+
+      // Fonts
+      "font-src 'self' data: https://fonts.gstatic.com",
+
+      // Styles
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+
+      // Scripts
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://va.vercel-scripts.com",
+
+      // API + WebSockets
+      "connect-src 'self' https://api.yourdomain.com https://vercel.live wss://*.vercel.live",
+
       "upgrade-insecure-requests",
     ].join("; "),
   },
@@ -34,8 +46,8 @@ const securityHeaders = [
 const corsHeaders = [
   { key: "Access-Control-Allow-Credentials", value: "true" },
 
-  
-  { key: "Access-Control-Allow-Origin", value: "https://www.chasmawala.com.np" },
+
+  { key: "Access-Control-Allow-Origin", value: "*" },
 
   { key: "Access-Control-Allow-Methods", value: "GET, POST, PUT, DELETE, OPTIONS" },
   { key: "Access-Control-Allow-Headers", value: "Content-Type, Authorization" },

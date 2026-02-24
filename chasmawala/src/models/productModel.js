@@ -12,6 +12,10 @@ const productSchema = new mongoose.Schema({
   stock: { type: Number, default: 5, min: 0 },
   rating: { type: Number, default: 0, min: 0, max: 5 },
   frameShape: { type: String, lowercase: true, trim: true }, // Added missing field from your queries
+  active: {
+    type: Boolean,
+    default: true,   // ✅ new products active by default
+  },
 }, { timestamps: true });
 
 // ✅ INDEXES - Critical for performance

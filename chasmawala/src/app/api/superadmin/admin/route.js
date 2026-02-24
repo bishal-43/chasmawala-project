@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { withSuperadminAuth } from "@/lib/api/withSuperAdminAuth"; // Use the HOF
 import { addAdminSchema } from "@/lib/validators/admin"; // Import the Zod schema
 import User from "@/models/userModel";
+import { ZodError } from "zod";
 import bcrypt from "bcryptjs";
 
 // ✅ GET: Fetch all admins (Now protected by the middleware)
@@ -26,12 +27,12 @@ const addAdminHandler = async (req) => {
       return NextResponse.json({ error: "An admin with this email already exists." }, { status: 409 }); // 409 Conflict is more specific
     }
 
-    // 3. Hash password and create user
+    
     
     const newAdmin = await User.create({
       name,
       email,
-      password,
+      password,     // hasing will be handled by the pre-save hook in the User model
       role: "admin",
     });
 
@@ -41,7 +42,7 @@ const addAdminHandler = async (req) => {
 
   } catch (error) {
     // Zod will throw an error if validation fails
-    if (error instanceof require('zod').ZodError) {
+    if (error instanceof ZodError) {
       return NextResponse.json({ error: error.errors[0].message }, { status: 400 });
     }
     // Handle other potential errors

@@ -34,7 +34,8 @@ export async function POST(req) {
 
     // Password check logic...
 
-    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET,{expiresIn: "30d"});
+    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET,{expiresIn: "1d"});
+    console.log("TOKEN CREATED:", token);
 
     const res = NextResponse.json({
       success: true,

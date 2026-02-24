@@ -24,10 +24,11 @@ export default function AdminLogin() {
 
   if (loading) return null;
 
-  if (user && !["admin", "superadmin"].includes(user.role)) {
-    router.replace("/");
-    return null;
-  }
+  useEffect(() => {
+    if (!loading && user && !["admin", "superadmin"].includes(user.role)) {
+      router.replace("/");
+    }
+  }, [user, loading, router]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -56,12 +57,12 @@ export default function AdminLogin() {
       }
 
       if (data.user) {
+        setSkipInitialCheck(true);
         setUser(data.user);
 
-        router.replace(data.redirectPath);
       }
 
-      router.replace(data.redirectPath);
+      
     } catch (err) {
       console.error("Login error:", err);
       setError("Something went wrong. Please try again.");

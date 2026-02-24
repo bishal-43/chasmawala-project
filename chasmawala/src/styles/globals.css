@@ -10,6 +10,11 @@
 @tailwind components;
 @tailwind utilities;
 
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
 /* Custom Styles */
 body {
     font-family: "Inter", sans-serif;
