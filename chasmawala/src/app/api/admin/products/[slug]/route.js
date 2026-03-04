@@ -5,17 +5,24 @@ import Product from "@/models/productModel";
 import { NextResponse } from "next/server";
 
 
-export async function PUT(req, {params}){
-    await connectDB();
-    const { slug } = params;
-    const body = await req.json();
+export async function PUT(req, { params }) {
+  await connectDB();
+  const { slug } = await params;
+  const body = await req.json();
 
-    try {
-        const updatedProduct = await Product.findOneAndUpdate({ slug }, body, {new: true});
-        return NextResponse.json({message: "Product updated successfully", product: updatedProduct });
-    }catch (error){
-        return NextResponse.json({error: "Failed to update product"},{status: 500});
-    }
+  try {
+    const updatedProduct = await Product.findOneAndUpdate(
+      { slug },
+      {
+        isTrending: body.isTrending,
+        isBestSeller: body.isBestSeller,
+      },
+      { new: true }
+    );
+    return NextResponse.json({ message: "Product updated successfully", product: updatedProduct });
+  } catch (error) {
+    return NextResponse.json({ error: "Failed to update product" }, { status: 500 });
+  }
 }
 
 export async function DELETE(req, context) {

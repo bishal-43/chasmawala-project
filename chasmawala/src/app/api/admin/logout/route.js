@@ -1,8 +1,16 @@
+// app/api/admin/logout/route.js
+import { NextResponse } from "next/server";
+
 export async function POST() {
-  return new Response(JSON.stringify({ message: "Logged out" }), {
-    status: 200,
-    headers: {
-      "Set-Cookie": `auth-token=; Path=/; HttpOnly; Max-Age=0`,
-    },
+  const response = NextResponse.json({ message: "Logged out" }, { status: 200 });
+
+  response.cookies.set("auth-token", "", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "Strict",
+    path: "/",
+    maxAge: 0, // instantly expires cookie
   });
+
+  return response;
 }

@@ -1,0 +1,98 @@
+// app/HomePage.js
+
+"use client";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/authContext";
+import PromoBanner from "@/components/PromoBanner";
+import ImageSlider from "@/components/ImageSlider";
+import Hero from "@/components/Hero";
+import Features from "@/components/Features";
+import ContactSection from "@/components/ContactSection";
+import ClarityCraftSection from "@/components/ClarityCraftSection";
+import OfferBanner from "@/components/OfferBanner";
+import HomeHero from "@/components/home/HomeHero";
+import HomeCategories from "@/components/home/HomeCategories";
+import TrendingSection from "@/components/home/TrendingSection";
+import BestsellerSection from "@/components/home/BestSellerSection";
+import ProductTabsSection from "@components/home/ProductTabSection";
+
+export default function HomePage({ trending, bestsellers }) {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && user) {
+      if (user.role === "admin") {
+        router.replace("/admin");
+      } else if (user.role === "superadmin") {
+        router.replace("/superadmin");
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, loading]);
+
+
+
+
+  // Prevent flicker while auth is loading
+  if (loading) return null;
+
+  return (
+    <div className="relative ">
+
+
+      {/* ✅ promotion banner */}
+
+
+      {/* <section className="relative z-10"> */}
+      {/* <PromoBanner /> */}
+      {/* </section> */}
+
+
+      {/* ✅ offer banner */}
+
+      {/* <section className="relative z-10 mt-8 px-4 md:px-10">
+        <OfferBanner />
+      </section> */}
+
+      {/* <section className="relative z-10">
+        <ImageSlider />
+      </section> */}
+
+
+      {/* ✅ hero section */}
+
+      {/* <section className="relative z-10">
+        <Hero />
+      </section> */}
+
+
+      <section className="relative z-10">
+        <HomeHero />
+        <HomeCategories />
+      </section>
+
+
+      <section className="relative z-10">
+        <ProductTabsSection />
+      </section>
+
+
+
+      <section className="relative z-10">
+        <ClarityCraftSection />
+      </section>
+
+      {/* ✅ Features Section */}
+      <section className="relative z-10">
+        <Features />
+      </section>
+
+      {/* ✅ Contact Section */}
+      <section className="relative z-10">
+        <ContactSection />
+      </section>
+    </div>
+  );
+}

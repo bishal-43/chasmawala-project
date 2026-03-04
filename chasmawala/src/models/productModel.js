@@ -16,6 +16,9 @@ const productSchema = new mongoose.Schema({
     type: Boolean,
     default: true,   // ✅ new products active by default
   },
+  isTrending: { type: Boolean, default: false },
+  isBestSeller: { type: Boolean, default: false },
+  soldCount: { type: Number, default: 0 },   // useful for auto trending
 }, { timestamps: true });
 
 // ✅ INDEXES - Critical for performance

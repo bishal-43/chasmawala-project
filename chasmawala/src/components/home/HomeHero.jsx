@@ -1,6 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import { ArrowRight, Eye } from "lucide-react";
+import Image from "next/image";
 
 export default function HomeHero() {
   return (
@@ -10,6 +11,16 @@ export default function HomeHero() {
         <div className="absolute top-0 left-0 w-96 h-96 bg-teal-400 rounded-full blur-3xl animate-pulse" />
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-amber-400 rounded-full blur-3xl animate-pulse delay-1000" />
       </div>
+
+      <Image
+        src="/images/hero/couple-sunglasses-celebrate-love-in-style.webp"
+        alt="Premium eyewear by Chasmawala"
+        fill
+        priority
+        className="object-cover"
+      />
+
+      <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
 
       <div className="container mx-auto px-6 pt-32 pb-20 relative z-10">
         <div className="max-w-4xl">
@@ -35,7 +46,7 @@ export default function HomeHero() {
             See the World
             <br />
             <span className="bg-gradient-to-r from-teal-300 via-amber-300 to-teal-300 bg-clip-text text-transparent">
-              Clearly
+              Through Chasmawala
             </span>
           </motion.h1>
 
@@ -70,6 +81,7 @@ export default function HomeHero() {
               <span className="text-lg">Book Consultation</span>
             </a>
           </motion.div>
+          
         </div>
       </div>
 

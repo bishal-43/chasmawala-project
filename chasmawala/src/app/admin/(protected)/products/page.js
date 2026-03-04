@@ -9,9 +9,12 @@ import Link from 'next/link';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
+import { ToggleSwitch } from '@/components/products/toggle'
+
 const ProductsPage = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [updating, setUpdating] = useState(null);
 
   const fetchProducts = async () => {
     try {
@@ -39,11 +42,41 @@ const ProductsPage = () => {
     }
   };
 
+  const toggleTrending = async (slug, current) => {
+    try {
+      setUpdating(slug);
+      await axios.put(`/api/admin/products/${slug}`, {
+        isTrending: !current,
+      });
+      toast.success('Trending updated');
+      fetchProducts();
+    } catch (err) {
+      toast.error('Failed to update trending');
+    } finally {
+      setUpdating(null);
+    }
+  };
+
+  const toggleBestSeller = async (slug, current) => {
+    try {
+      setUpdating(slug + '_best');
+      await axios.put(`/api/admin/products/${slug}`, {
+        isBestSeller: !current,
+      });
+      toast.success('BestSeller updated');
+      fetchProducts();
+    } catch (err) {
+      toast.error('Failed to update BestSeller');
+    } finally {
+      setUpdating(null);
+    }
+  };
+
   useEffect(() => {
     fetchProducts();
   }, []);
 
-  
+
 
   return (
     <div className="p-6 space-y-6">
@@ -66,12 +99,14 @@ const ProductsPage = () => {
                 <th className="px-4 py-2 text-left">Name</th>
                 <th className="px-4 py-2 text-left">Price</th>
                 <th className="px-4 py-2 text-left">Category</th>
+                <th className="px-4 py-2 text-left">Best Seller</th>
+                <th className="px-4 py-2 text-left">Trending</th>
                 <th className="px-4 py-2 text-left">Actions</th>
               </tr>
             </thead>
             <tbody>
               {products.map((product) => (
-                
+
                 <tr key={product.slug} className="border-t dark:border-gray-700">
                   <td className="px-4 py-3">
                     <img
@@ -83,6 +118,22 @@ const ProductsPage = () => {
                   <td className="px-4 py-3 font-medium">{product.name}</td>
                   <td className="px-4 py-3">₹{product.price}</td>
                   <td className="px-4 py-3 capitalize">{product.category}</td>
+                  <td className='px-4 py-3'>
+                    <ToggleSwitch
+                      value={product.isTrending}
+                      loading={updating === product.slug}
+                      onChange={() => toggleTrending(product.slug, product.isTrending)}
+                    />
+                  </td>
+
+                  <td className='px-4 py-3'>
+                    <ToggleSwitch
+                      value={product.isBestSeller}
+                      loading={updating === product.slug + '_best'}
+                      onChange={() => toggleBestSeller(product.slug, product.isBestSeller)}
+                    />
+                  </td>
+
                   <td className="px-4 py-3 flex gap-2">
                     <Link href={`/admin/products/${product.slug}/edit`}>
                       <Button variant="outline" size="sm">

@@ -3,10 +3,13 @@
 import { useState } from "react";
 import Sidebar from "./sidebar"; // Your responsive sidebar component
 import Topbar from "./topbar";   // Your topbar component
+import useIdleLogout from "@/hooks/useIdleLogout";
 
 // This layout correctly uses your responsive Sidebar and Topbar
 export default function ProtectedAdminLayout({ children }) {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
+
+  useIdleLogout(30 * 60 * 1000); // 30 min
 
   return (
     <div className="grid h-screen w-full md:grid-cols-[240px_1fr] lg:grid-cols-[280px_1fr]">

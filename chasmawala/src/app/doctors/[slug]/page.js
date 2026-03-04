@@ -216,7 +216,7 @@ export default function DoctorProfilePage() {
               {/* Action Buttons */}
               <div className="flex flex-wrap gap-4">
                 <a 
-                  href="/" 
+                  href="/contact" 
                   className="flex-1 min-w-[200px] inline-flex items-center justify-center px-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105"
                 >
                   <Calendar className="mr-2" size={20} />

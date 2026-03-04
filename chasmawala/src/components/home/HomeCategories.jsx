@@ -87,7 +87,7 @@ export default function HomeCategories() {
                     className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-110"
                   />
                   {/* Gradient Overlay */}
-                  <div className={`absolute inset-0 bg-gradient-to-t ${cat.gradient} opacity-60 group-hover:opacity-75 transition-opacity mix-blend-multiply`} />
+                  <div className={`absolute inset-0 bg-gradient-to-t ${cat.gradient} from-black/80 via-black/40 to-transparent opacity-70 group-hover:opacity-80 transition-opacity mix-blend-multiply`} />
                 </div>
 
                 {/* Content */}
@@ -103,10 +103,12 @@ export default function HomeCategories() {
                   <p className="text-white/90 text-sm font-medium opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
                     {cat.description} →
                   </p>
+
                 </div>
               </Link>
             </motion.div>
           ))}
+          
         </div>
       </div>
     </section>

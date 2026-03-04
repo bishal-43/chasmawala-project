@@ -17,6 +17,11 @@ module.exports = {
 					'100%': { transform: 'translateX(100%)' }
 				},
 			},
+
+			fontFamily: {
+				sans: ["DM Sans", "sans-serif"],
+				bebas: ["Bebas Neue", "cursive"],
+			},
 			animation: {
 				'pop-in': 'pop-in 0.4s ease-out forwards',
 				shimmer: 'shimmer 3s ease-in-out infinite',

@@ -6,10 +6,13 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/authContext";
 import Sidebar from "@/components/superadmin/Sidebar";
 import Topbar from "@/components/superadmin/Topbar";
+import useIdleLogout from "@/hooks/useIdleLogout";
 
 export default function SuperAdminLayout({ children }) {
   const { user, loading } = useAuth();
   const router = useRouter();
+
+  useIdleLogout(15 * 60 * 1000); // 15 min (stricter)
 
   useEffect(() => {
     if (!loading) {

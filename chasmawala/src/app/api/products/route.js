@@ -103,11 +103,16 @@ export async function GET(req) {
   const frameShapes = searchParams.getAll("frameShape");
   const maxPrice = searchParams.get("maxPrice");
   const slug = searchParams.get("slug");
+  const trending = searchParams.get("trending");
+  const bestseller = searchParams.get("bestseller");
 
   // Build query
   const query = {};
   let sortOptions = {};
   let limitOverride = null;
+
+  if (trending === "true") query.isTrending = true;
+  if (bestseller === "true") query.isBestSeller = true;
 
   if (slug) {
     // Convert slug (contact-lenses -> contact lenses)
@@ -147,7 +152,7 @@ export async function GET(req) {
   try {
     // Build query
     let queryBuilder = Product.find(query)
-      .select('name price image category brand slug frameShape stock rating')
+      .select('name price image category brand slug frameShape stock rating isTrending isBestSeller')
       .lean();
 
     if (Object.keys(sortOptions).length > 0) {

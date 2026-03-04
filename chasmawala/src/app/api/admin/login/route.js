@@ -21,13 +21,18 @@ export async function POST(req) {
     return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
   }
 
+
+  const tokenExpiry = user.role === "superadmin" ? "30m" : "2h";
+  const cookieMaxAge =
+    user.role === "superadmin" ? 30 * 60 : 2 * 60 * 60; // seconds
+
   // 3. Generate JWT
   const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
-    expiresIn: "1d",
+    expiresIn: tokenExpiry,
   });
 
 
-  console.log("Setting admin-token cookie with value:", token);
+  // console.log("Setting admin-token cookie with value:", token);
 
 
   // 4. Set secure cookie
@@ -47,7 +52,7 @@ export async function POST(req) {
   response.cookies.set("auth-token", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    maxAge: 60 * 60 * 24,
+    maxAge: cookieMaxAge,
     sameSite: "Strict",
     path: "/",
   });

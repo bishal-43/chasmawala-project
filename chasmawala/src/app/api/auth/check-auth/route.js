@@ -13,12 +13,12 @@ import { cookies } from 'next/headers'; // Correct way to access cookies in Next
 const JWT_SECRET = process.env.JWT_SECRET;
 
 export async function GET() {
-  console.log("Check-auth route hit.");
+  // console.log("Check-auth route hit.");
   try {
     // 1. Connect to the database
-    console.log("Attempting to connect to DB...");
+    // console.log("Attempting to connect to DB...");
     await connectDB();
-    console.log("DB connection successful.");
+    // console.log("DB connection successful.");
 
     // 2. Access server-side cookies
     const cookieStore = await cookies();
@@ -30,7 +30,7 @@ export async function GET() {
 
     // Log the token status for debugging purposes.
     // This will show 'undefined' if no token is found in the cookies.
-    console.log("Token retrieved in check-auth:", token ? "Token found" : "No token found");
+    // console.log("Token retrieved in check-auth:", token ? "Token found" : "No token found");
 
     // 4. If no token is found, return an Unauthorized response.
     if (!token) {
@@ -48,7 +48,7 @@ export async function GET() {
       console.error("Token verification failed:", err.message);
       return NextResponse.json({ error: "Unauthorized: Invalid or expired token" }, { status: 401 });
     }
-    console.log("Token verified successfully for user ID:", decoded.id);
+    // console.log("Token verified successfully for user ID:", decoded.id);
 
     // 6. Find the user in the database based on the decoded ID from the token.
     // Exclude the password field for security.
@@ -60,7 +60,7 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized: User not found" }, { status: 401 });
     }
 
-    console.log("User found in DB:", user.email, "Role:", user.role);
+    // console.log("User found in DB:", user.email, "Role:", user.role);
 
     // 8. Determine the redirection path based on the user's role.
     const roleRedirectMap = {
