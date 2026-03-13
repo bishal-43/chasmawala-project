@@ -17,6 +17,8 @@ export default function EditDoctorPage() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
+  const [imagePreview, setImagePreview] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
 
   const [form, setForm] = useState({
     name: "",
@@ -57,6 +59,7 @@ export default function EditDoctorPage() {
         data.clinic = data.clinic || { name: "", address: "", hours: "" };
         data.stats = data.stats || { experience: "" };
 
+        if (data.image) setImagePreview(data.image)
         setForm(data);
       } catch (error) {
         console.error(error);
@@ -81,6 +84,16 @@ export default function EditDoctorPage() {
       setForm((prev) => ({ ...prev, clinic: { ...prev.clinic, [field]: value } }));
     } else {
       setForm((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handleImageFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      const objectUrl = URL.createObjectURL(file)
+      setImagePreview(objectUrl);
+
     }
   };
 
@@ -133,13 +146,32 @@ export default function EditDoctorPage() {
     const token = localStorage.getItem("auth-token");
 
     try {
+      const formData = new FormData();
+
+      Object.keys(form).forEach((key) => {
+        if (key === "image") return;
+
+        if (typeof form[key] === "object") {
+          formData.append(key, JSON.stringify(form[key]));
+        } else {
+          formData.append(key, form[key])
+        }
+      });
+
+      if (selectedFile) {
+        formData.append("image", selectedFile)
+      } else if (form.image) {
+        // User did not upload a new file, send the existing URL string
+        formData.append("image", form.image);
+      }
+
       const res = await fetch(`/api/superadmin/doctors/${id}`, {
         method: "PUT",
         headers: {
-          "Content-Type": "application/json",
+
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(form),
+        body: formData,
       });
 
       if (res.ok) {
@@ -195,18 +227,51 @@ export default function EditDoctorPage() {
               <Label htmlFor="credentials">Credentials</Label>
               <Input id="credentials" name="credentials" value={form.credentials} onChange={handleChange} />
             </div>
+
             <div>
               <Label htmlFor="specialization">Specialization</Label>
               <Input id="specialization" name="specialization" value={form.specialization} onChange={handleChange} required />
             </div>
+
             <div>
               <Label htmlFor="experience">Experience</Label>
               <Input id="experience" name="stats.experience" value={form.stats.experience} onChange={handleChange} />
             </div>
+
+
             <div className="md:col-span-2">
-              <Label htmlFor="image">Image URL</Label>
-              <Input id="image" name="image" value={form.image} onChange={handleChange} />
+              <Label>Doctor Profile Image</Label>
+              <div className="mt-2 flex items-center gap-4 p-4 border rounded-lg bg-gray-50/50">
+                {/* Image Preview */}
+                <div className="relative w-20 h-20 rounded-full border-2 border-white shadow-sm overflow-hidden bg-gray-200">
+                  {imagePreview ? (
+                    <img
+                      src={imagePreview}
+                      alt="Profile Preview"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center h-full text-gray-400 text-xs text-center">
+                      No Image
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex-1 space-y-2">
+                  <Input
+                    id="imageUpload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageFileChange}
+                    className="bg-white"
+                  />
+                  <p className="text-[11px] text-gray-500">
+                    Current URL: <span className="italic truncate block max-w-[300px]">{form.image || "None"}</span>
+                  </p>
+                </div>
+              </div>
             </div>
+
             <div className="md:col-span-2">
               <Label htmlFor="bio">Biography</Label>
               <Textarea id="bio" name="bio" value={form.bio} onChange={handleChange} />

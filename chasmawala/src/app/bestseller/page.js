@@ -121,7 +121,7 @@ export default async function BestSellerPage() {
 
               <div className="text-right">
                 <p className="text-base md:text-xl font-black text-[#c9a84c]">NRs {product.price}</p>
-                <Link href={`/product/${product.slug}`} className="text-[0.6rem] uppercase font-bold text-white/40 hover:text-white transition-colors">
+                <Link href={`/products/${product.slug}`} className="text-[0.6rem] uppercase font-bold text-white/40 hover:text-white transition-colors">
                   Quick View →
                 </Link>
               </div>

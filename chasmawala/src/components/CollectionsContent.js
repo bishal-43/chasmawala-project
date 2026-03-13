@@ -145,7 +145,7 @@
 // src/components/CollectionsContent.js
 
 "use client";
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 
 import { motion, AnimatePresence } from "framer-motion";
 import ProductCard from "@/components/ProductCard";
@@ -159,6 +159,7 @@ import {
 } from "lucide-react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { fi } from "zod/v4/locales";
 
 /* ─────────────────────────────────────────────
    SKELETONS
@@ -247,8 +248,8 @@ function FilterPanel({ filterOptions, filters, onFilterChange }) {
       cat === "All"
         ? []
         : filters.categories.includes(cat)
-        ? filters.categories.filter((c) => c !== cat)
-        : [...filters.categories, cat];
+          ? filters.categories.filter((c) => c !== cat)
+          : [...filters.categories, cat];
     onFilterChange({ ...filters, categories: next });
   };
 
@@ -267,7 +268,7 @@ function FilterPanel({ filterOptions, filters, onFilterChange }) {
         <input
           value={localSearch}
           onChange={(e) => setLocalSearch(e.target.value)}
-          
+
           placeholder="Search products…"
           className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 pl-8 pr-3 py-2 text-[12px] outline-none
                      focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 dark:focus:ring-emerald-900 transition-all duration-200"
@@ -298,25 +299,24 @@ function FilterPanel({ filterOptions, filters, onFilterChange }) {
       </Section>
 
       {/* brands */}
+      {/* brands */}
       <Section title="Brand">
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-wrap gap-1.5">
           {brands.map((brand) => {
             const active = filters.brands.includes(brand);
             return (
-              <label key={brand} className="flex items-center gap-2.5 cursor-pointer select-none">
-                <div
-                  onClick={() => toggleBrand(brand)}
-                  className={cn(
-                    "w-4 h-4 rounded flex items-center justify-center transition-all duration-150 cursor-pointer",
-                    active
-                      ? "bg-gray-900 dark:bg-white border-transparent"
-                      : "border-1.5 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
-                  )}
-                >
-                  {active && <Check size={11} color={typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches ? "#111" : "#fff"} strokeWidth={3} />}
-                </div>
-                <span className="text-[12px] text-gray-700 dark:text-gray-300">{brand}</span>
-              </label>
+              <button
+                key={brand}
+                onClick={() => toggleBrand(brand)}
+                className={cn(
+                  "rounded-full px-3 py-1 text-[11px] font-600 transition-all duration-180",
+                  active
+                    ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900"
+                    : "border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-400"
+                )}
+              >
+                {brand}
+              </button>
             );
           })}
         </div>
@@ -360,11 +360,11 @@ function FilterPanel({ filterOptions, filters, onFilterChange }) {
    SORT DROPDOWN
    ───────────────────────────────────────────── */
 const SORT_OPTIONS = [
-  { key: "default",    label: "Recommended" },
-  { key: "price-asc",  label: "Price: Low → High" },
+  { key: "default", label: "Recommended" },
+  { key: "price-asc", label: "Price: Low → High" },
   { key: "price-desc", label: "Price: High → Low" },
-  { key: "rating",     label: "Top Rated" },
-  { key: "newest",     label: "Newest First" },
+  { key: "rating", label: "Top Rated" },
+  { key: "newest", label: "Newest First" },
 ];
 
 function SortDropdown({ value, onChange }) {
@@ -448,17 +448,21 @@ export default function CollectionsContent({ initialProducts, initialFilterOptio
   const pathname = usePathname();
 
   /* ── state ── */
-  const [products, setProducts]           = useState(initialProducts || []);
+  const [products, setProducts] = useState(initialProducts || []);
   const [filterOptions, setFilterOptions] = useState(initialFilterOptions || null);
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [isInitialRender, setIsInitialRender] = useState(true);
-  const [filterOpen, setFilterOpen]       = useState(false);
-  const [sort, setSort]                   = useState("default");
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [sort, setSort] = useState("default");
+  const loadMoreRef = useRef(null);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const isFetching = useRef(false);
 
   const [filters, setFilters] = useState({
     categories: searchParams.getAll("category"),
-    brands:     searchParams.getAll("brand"),
-    maxPrice:   searchParams.get("maxPrice") ? Number(searchParams.get("maxPrice")) : (initialFilterOptions?.priceRange?.[1] ?? null),
+    brands: searchParams.getAll("brand"),
+    maxPrice: searchParams.get("maxPrice") ? Number(searchParams.get("maxPrice")) : (initialFilterOptions?.priceRange?.[1] ?? null),
   });
 
   useEffect(() => {
@@ -471,36 +475,71 @@ export default function CollectionsContent({ initialProducts, initialFilterOptio
   }, [filterOpen]);
 
   /* ── fetch on filter change ── */
-  const fetchProducts = useCallback(async (currentFilters) => {
+  const fetchProducts = useCallback(async (currentFilters, pageNumber = 1, append = false) => {
+    if (isFetching.current) return;
+    isFetching.current = true;
     setLoadingProducts(true);
     const params = new URLSearchParams();
     currentFilters.categories.forEach((c) => params.append("category", c));
     currentFilters.brands.forEach((b) => params.append("brand", b));
     if (currentFilters.search) {
-        params.append("search", currentFilters.search);
+      params.append("search", currentFilters.search);
     }
     if (filterOptions && currentFilters.maxPrice < filterOptions.priceRange[1]) {
       params.set("maxPrice", currentFilters.maxPrice);
     }
 
+    params.set("page", pageNumber);
+    params.set("limit", 20)
+
     // Update URL Shallowly (so page doesn't reload, but URL updates)
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    if (!append) {
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    }
+
 
     try {
-      const res  = await fetch(`/api/products?${params.toString()}`);
+      const res = await fetch(`/api/products?${params.toString()}`);
       const data = await res.json();
-      setProducts(Array.isArray(data.products) ? data.products : Array.isArray(data) ? data : []);
+
+      const newProducts = Array.isArray(data.products)
+        ? data.products
+        : Array.isArray(data)
+          ? data
+          : [];
+
+      if (append) {
+        setProducts((prev) => {
+          const existingIds = new Set(prev.map((p) => p._id));
+
+          const filtered = newProducts.filter((p) => !existingIds.has(p._id));
+
+          return [...prev, ...filtered];
+        });
+      } else {
+        setProducts(newProducts);
+      }
+
+      if (newProducts.length < 20) {
+        setHasMore(false);
+      }
+
     } catch (err) {
       console.error("❌ Failed to fetch products:", err);
-      setProducts([]);
     } finally {
       setLoadingProducts(false);
+      isFetching.current = false;
     }
-  }, [filterOptions]);
+  }, [pathname, router, filterOptions]);
+
+
+
 
   const handleFilterChange = useCallback((next) => {
     setFilters(next);
-    fetchProducts(next);
+    setPage(1);
+    setHasMore(true);
+    fetchProducts(next, 1, false);
   }, [fetchProducts]);
 
   useEffect(() => {
@@ -511,22 +550,74 @@ export default function CollectionsContent({ initialProducts, initialFilterOptio
   const sorted = useMemo(() => {
     const list = [...products];
     switch (sort) {
-      case "price-asc":  list.sort((a, b) => a.price - b.price); break;
+      case "price-asc": list.sort((a, b) => a.price - b.price); break;
       case "price-desc": list.sort((a, b) => b.price - a.price); break;
-      case "rating":     list.sort((a, b) => (b.rating || 0) - (a.rating || 0)); break;
-      case "newest":     list.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0)); break;
+      case "rating": list.sort((a, b) => (b.rating || 0) - (a.rating || 0)); break;
+      case "newest": list.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0)); break;
     }
     return list;
   }, [products, sort]);
 
   const activeFilterCount = filters.categories.length + filters.brands.length;
-  const showSkeleton = loadingProducts || (isInitialRender && products.length === 0);
+  const showSkeleton = products.length === 0 && loadingProducts;
 
   const clearFilters = () => {
     const cleared = { categories: [], brands: [], maxPrice: filterOptions?.priceRange?.[1] ?? null };
     setFilters(cleared);
     fetchProducts(cleared);
   };
+
+  const loadMore = async () => {
+    if (loadingProducts || !hasMore) return;
+
+    const nextPage = page + 1;
+    setPage(nextPage)
+
+    fetchProducts(filters, nextPage, true)
+  }
+
+  useEffect(() => {
+    const currentRef = loadMoreRef.current;
+    if (!currentRef || !hasMore) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (
+          entry.isIntersecting &&
+          hasMore &&
+          !isFetching.current
+        ) {
+
+          setPage((prevPage) => {
+            const nextPage = prevPage + 1;
+
+            // 2. Trigger fetch
+            // 'filters' and 'fetchProducts' are stable enough to be here
+            fetchProducts(filters, nextPage, true);
+
+            return nextPage;
+          });
+        }
+      },
+      {
+        root: null,
+        rootMargin: "400px",
+        threshold: 0,
+      }
+    );
+
+
+
+    if (currentRef) {
+      observer.observe(currentRef);
+    }
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [filters, hasMore, fetchProducts]);
+
 
   /* ── render ── */
   return (
@@ -584,18 +675,25 @@ export default function CollectionsContent({ initialProducts, initialFilterOptio
           {showSkeleton ? (
             <GridSkeleton />
           ) : sorted.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
-              {sorted.map((p, i) => (
-                <motion.div
-                  key={p._id || p.id}
-                  initial={{ opacity: 0, y: 14 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.36, delay: i * 0.055, ease: [0.22, 1, 0.36, 1] }}
-                >
-                  <ProductCard product={p} />
-                </motion.div>
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
+                {sorted.map((p, i) => (
+                  <motion.div
+                    key={p._id || p.id}
+                    initial={{ opacity: 0, y: 14 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.36, delay: i * 0.055, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    <ProductCard product={p} />
+                  </motion.div>
+                ))}
+              </div>
+              <div ref={loadMoreRef} className="h-20 flex items-center justify-center">
+                {loadingProducts && (
+                  <span className="text-gray-500 text-sm">Loading more products...</span>
+                )}
+              </div>
+            </>
           ) : (
             <EmptyState onClear={clearFilters} />
           )}

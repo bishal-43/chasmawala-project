@@ -8,8 +8,8 @@ export const connectDB = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI, {
       dbName: "chasmawala",
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
+      
+      
     });
     console.log("🔥 MongoDB Connected: chasmawala");
   } catch (error) {

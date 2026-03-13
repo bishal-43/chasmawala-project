@@ -56,7 +56,7 @@ export default function TrendingPage() {
 
                     <div className="flex items-center gap-4">
                         <div className="relative cursor-pointer">
-                            <span className="text-2xl">🛒</span>
+                            {/* <span className="text-2xl">🛒</span> */}
                             {mounted && cartItems?.length > 0 && (
                                 <span className="absolute -top-1 -right-2 bg-[#c9a84c] text-black text-[10px] font-bold px-1.5 py-0.5 rounded-full">
                                     {cartItems.length}

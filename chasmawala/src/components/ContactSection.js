@@ -298,6 +298,7 @@ import { useState, useEffect } from "react";
 import { User, Star, MessageCircle, X, Phone, Mail, Award, Users } from "lucide-react";
 import { AnimatePresence, motion} from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 
 // Skeleton Loader
 const DoctorCardSkeleton = () => (
@@ -406,9 +407,11 @@ const DoctorCard = ({ doctor, onConsultClick }) => (
   >
     {/* Image */}
     <div className="relative overflow-hidden">
-      <img
+      <Image
         src={doctor.image || `https://placehold.co/400x400/0F766E/ffffff?text=${doctor.name.charAt(0)}`}
         alt={doctor.name}
+        width={280}
+        height={280}
         className="w-full h-64 object-cover transition-transform duration-700 group-hover:scale-110"
       />
       {doctor.isOnline && (
