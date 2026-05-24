@@ -111,7 +111,7 @@ export async function POST(req) {
     );
 
   } catch (error) {
-    console.error("Signup error:", error);
+    // console.error("Signup error:", error);
 
     // BEST PRACTICE: If email fails to send after user is created, delete the user to allow them to try again.
     if (newUser) {
@@ -120,7 +120,7 @@ export async function POST(req) {
 
     // MailerSend error
     if (error?.response?.body) {
-      console.error("MailerSend Error:", error.response.body);
+      // console.error("MailerSend Error:", error.response.body);
 
       const message =
         error.response.body?.message ||

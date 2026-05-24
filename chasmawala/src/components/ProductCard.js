@@ -393,16 +393,14 @@ const ProductCard = memo(({ product }) => {
       initial={{ opacity: 0, translateY: 18 }}
       animate={{ opacity: 1, translateY: 0 }}
       transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
-      className="group relative w-full sm:w-[240px] flex flex-col rounded-xl overflow-hidden
-                 bg-white dark:bg-[#141414]
-                 border border-gray-100 dark:border-gray-800
-                 shadow-[0_2px_12px_rgba(0,0,0,0.06)]
-                 hover:shadow-[0_8px_32px_rgba(0,0,0,0.14)]
-                 transition-shadow duration-300 ease-out"
+      className="group relative w-full flex flex-col rounded-2xl overflow-hidden
+                 bg-white border border-stone-100/60
+                 shadow-[0_2px_12px_rgba(0,0,0,0.04)]
+                 hover:shadow-[0_8px_32px_rgba(0,0,0,0.1)]
+                 transition-all duration-300 ease-out"
     >
       {/* ─── Image block ─── */}
-      <div className="relative group w-full overflow-hidden"
-        style={{ aspectRatio: "1 / 0.82" }}>
+      <div className="relative group w-full overflow-hidden aspect-[4/5]">
 
         <Link href={`/products/${product.slug}`} className="block h-full w-full">
           <Image

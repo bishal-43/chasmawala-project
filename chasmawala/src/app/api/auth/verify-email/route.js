@@ -2,7 +2,7 @@
 
 import { NextResponse } from 'next/server';
 import User from '@/models/userModel';
-import {connectDB} from '@/config/db';
+import { connectDB } from '@/config/db';
 
 export async function POST(request) {
   await connectDB();
@@ -34,7 +34,7 @@ export async function POST(request) {
     return NextResponse.json({ message: 'Email verified successfully!' }, { status: 200 });
 
   } catch (error) {
-    console.error('Verification Error:', error);
+    // console.error('Verification Error:', error);
     return NextResponse.json({ message: 'Error verifying email.' }, { status: 500 });
   }
 }

@@ -6,7 +6,7 @@ export async function DELETE(req, { params }) {
   await connectDB();
   const { id } = await params;
 
-  
+
   await Product.findByIdAndDelete(id);
   return NextResponse.json({ success: true });
 }
@@ -44,7 +44,7 @@ export async function PATCH(request, { params }) {
       product,
     });
   } catch (error) {
-    console.error("PATCH /products/[id] error:", error);
+    // console.error("PATCH /products/[id] error:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }

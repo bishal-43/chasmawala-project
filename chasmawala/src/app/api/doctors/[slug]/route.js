@@ -16,7 +16,7 @@ export async function GET(req, context) {
 
     return NextResponse.json(doctor);
   } catch (error) {
-    console.error("Doctor fetch error:", error);
+    // console.error("Doctor fetch error:", error);
     return NextResponse.json({ message: "Server error" }, { status: 500 });
   }
 }

@@ -10,7 +10,6 @@ import {
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useAuth } from "@/contexts/authContext";
-import ThemeToggle from "@/components/ThemeToggle";
 import Image from "next/image";
 
 /* ─────────────────────────────────────────────────────────────
@@ -305,11 +304,7 @@ const MobileDrawer = ({ isOpen, user, logout, onClose }) => {
               My Wishlist
             </Link>
 
-            {/* Theme row */}
-            <div className="flex items-center justify-between px-4 py-2.5 rounded-xl">
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Appearance</span>
-              <ThemeToggle />
-            </div>
+
           </div>
 
           {/* Divider */}
@@ -607,10 +602,7 @@ const Navbar = () => {
                 {cartCount > 0 && <Badge count={cartCount} />}
               </IconBtn>
 
-              {/* Theme toggle — md+ */}
-              <div className="hidden md:block">
-                <ThemeToggle />
-              </div>
+
 
               {/* User — lg+ */}
               <div className="relative hidden lg:block" ref={dropdownRef}>

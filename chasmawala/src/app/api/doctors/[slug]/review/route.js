@@ -16,7 +16,7 @@ export async function POST(req, context) {
       req.cookies.get("auth-token")?.value ||
       req.headers.get("authorization")?.split(" ")[1];
 
-    if(!token){
+    if (!token) {
       return NextResponse.json({ message: "Unauthorized,Please login to review" }, { status: 401 });
     }
     const user = await verifyTokenAndGetUser(token);
@@ -53,7 +53,7 @@ export async function POST(req, context) {
 
     return NextResponse.json({ message: "Review added successfully" });
   } catch (error) {
-    console.error("Review submission error:", error);
+    // console.error("Review submission error:", error);
     return NextResponse.json({ message: "Server error" }, { status: 500 });
   }
 }

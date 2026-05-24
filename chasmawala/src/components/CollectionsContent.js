@@ -160,19 +160,22 @@ import {
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { fi } from "zod/v4/locales";
+import { Cormorant_Garamond } from 'next/font/google';
+
+const cormorant = Cormorant_Garamond({ subsets: ['latin'], weight: ['400', '700'], variable: '--font-cormorant' });
 
 /* ─────────────────────────────────────────────
    SKELETONS
    ───────────────────────────────────────────── */
 const CardSkeleton = () => (
-  <div className="w-[220px] sm:w-[240px] rounded-xl overflow-hidden bg-white border border-gray-100">
-    <div className="animate-shimmer" style={{ aspectRatio: "1 / 0.88", background: "linear-gradient(90deg,#f0f0f0 25%,#fafafa 50%,#f0f0f0 75%)", backgroundSize: "200% 100%" }} />
-    <div className="p-3 flex flex-col gap-2">
-      <div className="w-14 h-2 rounded-full bg-gray-100" />
-      <div className="w-[90%] h-2.5 rounded-full bg-gray-100" />
-      <div className="w-[60%] h-2.5 rounded-full bg-gray-100" />
-      <div className="w-12 h-2 rounded-full bg-gray-100 mt-1" />
-      <div className="w-full h-8 rounded-lg bg-gray-100 mt-1.5" />
+  <div className="w-full rounded-2xl overflow-hidden bg-white border border-stone-100/60 shadow-sm">
+    <div className="animate-shimmer aspect-[4/5] bg-stone-50" style={{ background: "linear-gradient(90deg,#f5f5f5 25%,#fafafa 50%,#f5f5f5 75%)", backgroundSize: "200% 100%" }} />
+    <div className="p-4 flex flex-col gap-2">
+      <div className="w-14 h-2 rounded-full bg-stone-100" />
+      <div className="w-[90%] h-2.5 rounded-full bg-stone-100" />
+      <div className="w-[60%] h-2.5 rounded-full bg-stone-100" />
+      <div className="w-12 h-2 rounded-full bg-stone-100 mt-1" />
+      <div className="w-full h-9 rounded-xl bg-stone-100 mt-1.5" />
     </div>
   </div>
 );
@@ -621,32 +624,29 @@ export default function CollectionsContent({ initialProducts, initialFilterOptio
 
   /* ── render ── */
   return (
-    <div className="min-h-screen bg-[#f5f5f3] dark:bg-[#0f0f0f]">
+    <div className="min-h-screen bg-[#fafaf9]">
 
       {/* ── sticky top bar ── */}
-      <div className="sticky top-0 z-20 bg-white dark:bg-[#141414] border-b border-gray-100 dark:border-gray-800">
+      <div className="sticky top-[64px] sm:top-[72px] z-20 bg-white border-b border-stone-100">
         <div className="max-w-[1280px] mx-auto px-6 py-4 flex items-center justify-between">
           <div>
-            <h1 className="text-[20px] font-700 text-gray-900 dark:text-white tracking-[-0.02em]">
-              All Products
+            <h1 className={`${cormorant.className} text-2xl md:text-3xl font-black text-stone-900 tracking-tight`}>
+              All <span className="text-transparent italic [-webkit-text-stroke:1px_#10b981] font-light">Products</span>
             </h1>
-            {/* <p className="text-[11px] text-gray-400 mt-0.5">
-              {sorted.length} item{sorted.length !== 1 ? "s" : ""} found
-            </p> */}
           </div>
           <div className="flex items-center gap-2.5">
             {/* filter trigger (mobile + always-visible compact trigger) */}
             <button
               onClick={() => setFilterOpen(true)}
-              className="relative flex items-center gap-1.5 rounded-lg border border-gray-200 dark:border-gray-700
-                         bg-white dark:bg-gray-900 px-3 py-1.5 text-[12px] font-600 text-gray-700 dark:text-gray-300
-                         hover:border-gray-400 transition-colors duration-200 lg:hidden"
+              className="relative flex items-center gap-1.5 rounded-lg border border-stone-200
+                         bg-white px-3 py-1.5 text-[12px] font-600 text-stone-700
+                         hover:border-stone-400 transition-colors duration-200 lg:hidden"
             >
               <SlidersHorizontal size={14} />
               Filters
               {activeFilterCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 w-4.5 h-4.5 rounded-full bg-gray-900 dark:bg-white
-                                 text-white dark:text-gray-900 text-[9px] font-700 flex items-center justify-center">
+                <span className="absolute -top-1.5 -right-1.5 w-4.5 h-4.5 rounded-full bg-stone-900
+                                 text-white text-[9px] font-700 flex items-center justify-center">
                   {activeFilterCount}
                 </span>
               )}
@@ -660,8 +660,8 @@ export default function CollectionsContent({ initialProducts, initialFilterOptio
       <div className="max-w-[1280px] mx-auto px-6 py-6 flex gap-8">
 
         {/* ── sidebar (desktop) ── */}
-        <aside className="hidden lg:block w-[260px] flex-shrink-0 sticky top-[88px] self-start max-h-[calc(100vh-108px)] overflow-y-auto">
-          <div className="bg-white dark:bg-[#141414] rounded-xl border border-gray-100 dark:border-gray-800 p-5">
+        <aside className="hidden lg:block w-[260px] flex-shrink-0 sticky top-[156px] self-start max-h-[calc(100vh-176px)] overflow-y-auto">
+          <div className="bg-white rounded-2xl border border-stone-100 p-5">
             <FilterPanel
               filterOptions={filterOptions}
               filters={filters}

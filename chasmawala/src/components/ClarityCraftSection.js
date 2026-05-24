@@ -101,7 +101,7 @@ export default function ClarityCraftSection() {
   return (
     <section className="relative bg-white py-20 md:py-32 overflow-hidden">
       {/* Decorative Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-teal-50/30" />
+      <div className="absolute inset-0 bg-gradient-to-br from-stone-50 via-white to-emerald-50/20" />
       
       <div className="container mx-auto px-6 relative z-10">
         <div className="flex flex-col lg:flex-row items-center gap-16">
@@ -111,25 +111,28 @@ export default function ClarityCraftSection() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="w-full lg:w-1/2"
+            className="w-full lg:w-1/2 text-center lg:text-left"
           >
-            <span className="inline-block text-teal-600 font-bold text-sm tracking-widest uppercase mb-4">
-              Premium Quality
-            </span>
-            <h2 className="text-5xl md:text-6xl font-black text-slate-900 mb-6 leading-tight" style={{ fontFamily: "'Outfit', sans-serif" }}>
+            <div className="flex items-center justify-center lg:justify-start gap-2 mb-4">
+              <span className="px-3 py-1 bg-emerald-500/10 text-emerald-600 text-[0.65rem] font-black uppercase tracking-widest rounded-full">
+                Premium Quality
+              </span>
+            </div>
+            
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-slate-900 mb-6 leading-tight" style={{ fontFamily: "'Outfit', sans-serif" }}>
               Clarity Meets
               <br />
-              <span className="bg-gradient-to-r from-teal-600 to-amber-500 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-emerald-600 to-[#c9a84c] bg-clip-text text-transparent">
                 Craftsmanship
               </span>
             </h2>
 
-            <p className="text-xl text-slate-600 mb-8 leading-relaxed">
+            <p className="text-base sm:text-lg md:text-xl text-slate-650 text-slate-605 mb-8 leading-relaxed max-w-xl mx-auto lg:mx-0">
               Experience handcrafted frames and lenses engineered for a brighter perspective. From timeless designs to advanced optical technology.
             </p>
 
             {/* Benefits List */}
-            <div className="space-y-4 mb-10">
+            <div className="space-y-4 mb-10 inline-block text-left lg:block">
               {benefits.map((benefit, idx) => (
                 <motion.div
                   key={idx}
@@ -139,18 +142,20 @@ export default function ClarityCraftSection() {
                   transition={{ delay: idx * 0.1 }}
                   className="flex items-center gap-3"
                 >
-                  <CheckCircle className="w-6 h-6 text-teal-600 flex-shrink-0" />
-                  <span className="text-slate-700 font-medium">{benefit}</span>
+                  <CheckCircle className="w-5 h-5 text-emerald-500 flex-shrink-0" />
+                  <span className="text-slate-700 font-medium text-sm sm:text-base">{benefit}</span>
                 </motion.div>
               ))}
             </div>
 
-            <Link href="/collections">
-              <button className="group inline-flex items-center gap-3 bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white font-bold px-8 py-4 rounded-2xl transition-all duration-300 shadow-lg shadow-teal-600/30 hover:shadow-xl hover:-translate-y-0.5">
-                <span className="text-lg">Discover Your Pair</span>
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </button>
-            </Link>
+            <div className="mt-2 flex justify-center lg:justify-start">
+              <Link href="/collections">
+                <button className="group inline-flex items-center gap-3 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-bold px-8 py-4 rounded-2xl transition-all duration-300 shadow-lg shadow-emerald-600/30 hover:shadow-xl hover:-translate-y-0.5">
+                  <span className="text-lg">Discover Your Pair</span>
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </button>
+              </Link>
+            </div>
           </motion.div>
 
           {/* Image */}

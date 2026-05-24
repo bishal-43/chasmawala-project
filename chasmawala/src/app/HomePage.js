@@ -15,7 +15,7 @@ import HomeHero from "@/components/home/HomeHero";
 import HomeCategories from "@/components/home/HomeCategories";
 import TrendingSection from "@/components/home/TrendingSection";
 import BestsellerSection from "@/components/home/BestSellerSection";
-import ProductTabsSection from "@components/home/ProductTabSection";
+import PromoPortalsSection from "@/components/home/PromoPortalsSection";
 
 export default function HomePage({ trending, bestsellers }) {
   const { user, loading } = useAuth();
@@ -73,10 +73,11 @@ export default function HomePage({ trending, bestsellers }) {
         <HomeCategories />
       </section>
 
-
       <section className="relative z-10">
-        <ProductTabsSection />
+        <PromoPortalsSection />
       </section>
+
+
 
 
 

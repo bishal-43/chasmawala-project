@@ -12,7 +12,7 @@ export async function POST(req) {
     // 1. Delete the 'admin-token' cookie
     // Set maxAge to 0 or an immediate past date to expire it immediately.
     // Ensure path, domain, secure, and httpOnly match how the cookie was set during login.
-    
+
 
     // 2. If you also use a generic 'token' cookie for customers, delete that too.
     response.cookies.set("auth-token", "", {
@@ -26,7 +26,7 @@ export async function POST(req) {
     return response;
 
   } catch (error) {
-    console.error("Logout API error:", error);
+    // console.error("Logout API error:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

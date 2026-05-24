@@ -5,7 +5,7 @@ import { connectDB } from "@/config/db";
 import Order from "@/models/orderModel";
 import User from "@/models/userModel";
 
-const JWT_SECRET = process.env.JWT_SECRET ;
+const JWT_SECRET = process.env.JWT_SECRET;
 
 export async function GET(req) {
   await connectDB();
@@ -23,7 +23,7 @@ export async function GET(req) {
 
     return NextResponse.json({ orders }, { status: 200 });
   } catch (error) {
-    console.error("❌ Error fetching orders:", error);
+    // console.error("❌ Error fetching orders:", error);
     return NextResponse.json({ error: "Server Error" }, { status: 500 });
   }
 }

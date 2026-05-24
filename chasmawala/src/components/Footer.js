@@ -88,7 +88,9 @@ export default function Footer() {
           <FooterLinkColumn title="Shop">
             <FooterLink href="/collections/sunglasses">Sunglasses</FooterLink>
             <FooterLink href="/collections/eyeglasses">Eyeglasses</FooterLink>
-            <FooterLink href="/collections/new-arrivals">New Arrivals</FooterLink>
+            <FooterLink href="/new-arrivals">New Arrivals</FooterLink>
+            <FooterLink href="/bestseller">Bestsellers</FooterLink>
+            <FooterLink href="/trending">Trending Now</FooterLink>
             <FooterLink href="/brands">Our Brands</FooterLink>
           </FooterLinkColumn>
 

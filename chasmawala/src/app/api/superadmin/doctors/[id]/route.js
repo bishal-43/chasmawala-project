@@ -14,23 +14,23 @@ cloudinary.config({
 async function uploadToCloudinary(file) {
   // 1. Convert the File/Blob to an ArrayBuffer
   const arrayBuffer = await file.arrayBuffer();
-  
+
   // 2. Convert ArrayBuffer to Buffer for Node.js
   const buffer = Buffer.from(arrayBuffer);
 
   // 3. Upload to Cloudinary using a Promise
   return new Promise((resolve, reject) => {
     cloudinary.uploader.upload_stream(
-      { 
+      {
         folder: "chasmawala_doctors", // Organizes your images
-        resource_type: "auto" 
+        resource_type: "auto"
       },
       (error, result) => {
         if (error) {
-          console.error("Cloudinary upload failed:", error);
+          // console.error("Cloudinary upload failed:", error);
           reject(error);
         } else {
-          resolve({url: result.secure_url, publicId: result.public_id}); // This is the final https:// URL
+          resolve({ url: result.secure_url, publicId: result.public_id }); // This is the final https:// URL
         }
       }
     ).end(buffer);
@@ -52,7 +52,7 @@ const getDoctorHandler = async (req, context, user) => {
     return NextResponse.json(doctor);
 
   } catch (error) {
-    console.error(`Error fetching doctor: ${error.message}`);
+    // console.error(`Error fetching doctor: ${error.message}`);
     if (error.kind === 'ObjectId') {
       return NextResponse.json({ message: "Invalid Doctor ID format" }, { status: 400 });
     }
@@ -95,17 +95,17 @@ const updateDoctorHandler = async (req, context, user) => {
 
     // If it's a File object (user uploaded a new one)
     if (imageFile && typeof imageFile !== "string" && imageFile.name) {
-      const { url, publicId } = await uploadToCloudinary(imageFile); 
+      const { url, publicId } = await uploadToCloudinary(imageFile);
       updateData.image = url;
       updateData.imagePublicId = publicId;
 
       // DELETE OLD IMAGE (Cleanup)
       if (currentDoctor.imagePublicId) {
-        await cloudinary.uploader.destroy(currentDoctor.imagePublicId).catch(err => 
+        await cloudinary.uploader.destroy(currentDoctor.imagePublicId).catch(err =>
           console.error("Failed to delete old image:", err)
         );
       }
-      
+
     }
     // If it's a string, it's just the existing URL, so we don't need to do anything
     // unless you want to explicitly set it:
@@ -130,7 +130,7 @@ const updateDoctorHandler = async (req, context, user) => {
     return NextResponse.json(updatedDoctor);
 
   } catch (error) {
-    console.error(`Error updating doctor: ${error.message}`);
+    // console.error(`Error updating doctor: ${error.message}`);
     if (error.code === 11000) {
       return NextResponse.json({ message: "Update failed: A doctor with this email or slug already exists." }, { status: 409 });
     }
@@ -169,7 +169,7 @@ const deleteDoctorHandler = async (req, context, user) => {
     return NextResponse.json({ message: "Doctor deleted successfully" });
 
   } catch (error) {
-    console.error(`Error deleting doctor: ${error.message}`);
+    // console.error(`Error deleting doctor: ${error.message}`);
     return NextResponse.json({ message: "Server error" }, { status: 500 });
   }
 };

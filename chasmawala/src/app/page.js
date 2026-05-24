@@ -17,14 +17,14 @@ async function getBestsellers() {
 
 export default async function Home() {
   const [trending, bestsellers] = await Promise.all([
-    getTrending(),
-    getBestsellers(),
+    // getTrending(),
+    // getBestsellers(),
   ]);
 
   return (
     <HomePage
-      trending={trending.products}
-      bestsellers={bestsellers.products}
+    // trending={trending.products}
+    // bestsellers={bestsellers.products}
     />
   );
 }

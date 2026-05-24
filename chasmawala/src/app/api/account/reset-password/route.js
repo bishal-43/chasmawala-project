@@ -24,7 +24,7 @@ export async function POST(req) {
       return NextResponse.json({ message: "Invalid or expired password reset token." }, { status: 400 });
     }
 
-    
+
 
     // Update the user's password
     user.password = password;
@@ -38,7 +38,7 @@ export async function POST(req) {
     return NextResponse.json({ message: "Password has been reset successfully." }, { status: 200 });
 
   } catch (error) {
-    console.error("Reset Password Error:", error);
+    // console.error("Reset Password Error:", error);
     return NextResponse.json({ message: "An internal server error occurred." }, { status: 500 });
   }
 }

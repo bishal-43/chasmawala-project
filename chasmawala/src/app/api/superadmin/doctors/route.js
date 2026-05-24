@@ -17,10 +17,10 @@ cloudinary.config({
 const uploadToCloudinary = (buffer, folder) => {
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
-          {
-      folder: folder,
-      resource_type: "auto"
-    },
+      {
+        folder: folder,
+        resource_type: "auto"
+      },
       (error, result) => {
         if (error) {
           return reject(error);
@@ -37,7 +37,7 @@ const uploadToCloudinary = (buffer, folder) => {
 // This is the main logic for the POST request.
 // The 'user' object is passed in from the middleware.
 const addDoctorHandler = async (req, context, user) => {
-  console.log(`Authenticated superadmin ${user.email} is adding a doctor.`);
+  // console.log(`Authenticated superadmin ${user.email} is adding a doctor.`);
 
   try {
     // 1. Parse FormData (Middleware already connected DB)
@@ -82,7 +82,7 @@ const addDoctorHandler = async (req, context, user) => {
         imagePublicId = uploadResult.public_id;
 
       } catch (uploadError) {
-        console.error("Image upload error:", uploadError);
+        // console.error("Image upload error:", uploadError);
         return NextResponse.json({ message: "Image upload failed" }, { status: 500 });
       }
     }
@@ -104,7 +104,7 @@ const addDoctorHandler = async (req, context, user) => {
     return NextResponse.json(doctor, { status: 201 });
 
   } catch (error) {
-    console.error("Add doctor error:", error);
+    // console.error("Add doctor error:", error);
     if (error.code === 11000) {
       const field = Object.keys(error.keyValue)[0];
       return NextResponse.json({ message: `A doctor with this ${field} already exists.` }, { status: 409 });
@@ -124,7 +124,7 @@ export async function GET() {
     const doctors = await Doctor.find();
     return NextResponse.json(doctors);
   } catch (error) {
-    console.error("Fetch doctors error:", error);
+    // console.error("Fetch doctors error:", error);
     return NextResponse.json({ message: "Server error" }, { status: 500 });
   }
 }

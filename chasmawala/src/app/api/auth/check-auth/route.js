@@ -45,7 +45,7 @@ export async function GET() {
     } catch (err) {
       // If verification fails (e.g., token is invalid, expired, or tampered with),
       // return an Unauthorized response.
-      console.error("Token verification failed:", err.message);
+      // console.error("Token verification failed:", err.message);
       return NextResponse.json({ error: "Unauthorized: Invalid or expired token" }, { status: 401 });
     }
     // console.log("Token verified successfully for user ID:", decoded.id);
@@ -56,7 +56,7 @@ export async function GET() {
 
     // 7. If no user is found for the decoded ID, return an Unauthorized response.
     if (!user) {
-      console.log("User not found in DB for ID:", decoded.id);
+      // console.log("User not found in DB for ID:", decoded.id);
       return NextResponse.json({ error: "Unauthorized: User not found" }, { status: 401 });
     }
 
@@ -74,7 +74,7 @@ export async function GET() {
 
     // 9. If the user's role does not have a defined redirection path, return a Forbidden response.
     if (!redirectPath) {
-      console.warn(`User with role '${user.role}' has no defined redirect path.`);
+      // console.warn(`User with role '${user.role}' has no defined redirect path.`);
       return NextResponse.json({ error: "Forbidden: Unknown user role" }, { status: 403 });
     }
 
@@ -91,7 +91,7 @@ export async function GET() {
 
   } catch (error) {
     // 11. Catch any unexpected errors during the process and return a Server Error response.
-    console.error("Check-auth API route error:", error);
+    // console.error("Check-auth API route error:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

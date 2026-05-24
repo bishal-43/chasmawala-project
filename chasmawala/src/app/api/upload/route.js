@@ -59,7 +59,7 @@ export async function POST(req) {
       public_id: uploadResult.public_id,
     });
   } catch (error) {
-    console.error("Upload API error:", error);
+    // console.error("Upload API error:", error);
     return NextResponse.json(
       { message: "Image upload failed", error: error.message },
       { status: 500 }
