@@ -10,7 +10,7 @@ export async function GET() {
 
     // Find all users with the role 'user' to list as customers
     // .select() ensures you only send non-sensitive data to the frontend
-    const customers = await User.find({ role: 'user' })
+    const customers = await User.find({ role: 'customer' })
       .select("name email createdAt")
       .sort({ createdAt: -1 });
 

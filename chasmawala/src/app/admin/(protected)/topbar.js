@@ -219,22 +219,22 @@ export default function Topbar({ onMenuClick, title = "Dashboard" }) {
   };
 
   return (
-    <header className="sticky top-0 z-20 h-16 bg-white border-b border-stone-200 flex items-center px-4 sm:px-7 gap-4">
+    <header className="sticky top-0 z-20 h-16 bg-white/80 backdrop-blur-md border-b border-zinc-100 flex items-center px-4 sm:px-7 gap-4">
 
       {/* ── Mobile search overlay ── */}
       {isMobileSearchOpen && (
         <div className="absolute inset-0 z-30 flex items-center bg-white px-4 gap-3 animate-in fade-in slide-in-from-top-1 duration-200">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400 pointer-events-none" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 pointer-events-none" />
             <input
               autoFocus
-              className="w-full h-10 pl-9 pr-4 rounded-xl border border-stone-200 bg-stone-50 text-sm text-stone-800 placeholder:text-stone-400 outline-none focus:border-stone-300 focus:ring-2 focus:ring-stone-100 transition-all"
+              className="w-full h-10 pl-10 pr-4 rounded-xl border border-zinc-200 bg-zinc-50 text-sm text-zinc-800 placeholder:text-zinc-400 outline-none focus:border-amber-400/80 focus:ring-4 focus:ring-amber-500/10 transition-all duration-200"
               placeholder="Search products, orders..."
               onBlur={() => setIsMobileSearchOpen(false)}
             />
           </div>
           <button
-            className="w-9 h-9 rounded-xl border border-stone-200 flex items-center justify-center text-stone-400 hover:bg-stone-50 hover:text-stone-700 transition-all flex-shrink-0"
+            className="w-9 h-9 rounded-xl border border-zinc-200 flex items-center justify-center text-zinc-400 hover:bg-zinc-50 hover:text-zinc-700 transition-all flex-shrink-0"
             onClick={() => setIsMobileSearchOpen(false)}
           >
             <X className="h-4 w-4" />
@@ -245,21 +245,21 @@ export default function Topbar({ onMenuClick, title = "Dashboard" }) {
       {/* ── Left: mobile menu + breadcrumb ── */}
       <div className="flex items-center gap-3 flex-1 min-w-0">
         <button
-          className="md:hidden w-9 h-9 rounded-xl border border-stone-200 flex items-center justify-center text-stone-400 hover:bg-stone-50 hover:text-stone-700 transition-all flex-shrink-0"
+          className="md:hidden w-9 h-9 rounded-xl border border-zinc-200 flex items-center justify-center text-zinc-400 hover:bg-zinc-50 hover:text-zinc-700 transition-all flex-shrink-0"
           onClick={onMenuClick}
         >
           <Menu className="h-4 w-4" />
           <span className="sr-only">Toggle menu</span>
         </button>
 
-        <div className="hidden md:block w-px h-5 bg-stone-200 flex-shrink-0" />
+        <div className="hidden md:block w-px h-5 bg-zinc-200 flex-shrink-0" />
 
         <div className="flex items-center gap-2 min-w-0">
-          <span className="hidden sm:block text-[11px] font-medium tracking-widest uppercase text-stone-300 whitespace-nowrap">
+          <span className="hidden sm:block text-[10px] font-bold tracking-widest uppercase text-zinc-405 text-zinc-400 whitespace-nowrap">
             Admin
           </span>
-          <span className="hidden sm:block text-stone-300 text-sm">›</span>
-          <span className="font-serif text-[17px] font-medium text-stone-800 truncate">
+          <span className="hidden sm:block text-zinc-300 text-sm">/</span>
+          <span className="font-bold text-[16px] text-zinc-800 tracking-tight truncate">
             {title}
           </span>
         </div>
@@ -267,13 +267,13 @@ export default function Topbar({ onMenuClick, title = "Dashboard" }) {
 
       {/* ── Center: desktop search ── */}
       <div className="hidden md:block flex-shrink-0 w-[380px] lg:w-[440px]">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400 pointer-events-none" />
+        <div className="relative group">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 pointer-events-none group-focus-within:text-amber-500 transition-colors" />
           <input
-            className="w-full h-[38px] pl-9 pr-14 rounded-xl border border-stone-200 bg-stone-50 text-[13px] text-stone-800 placeholder:text-stone-400 outline-none focus:border-stone-300 focus:bg-white focus:ring-2 focus:ring-stone-100 transition-all"
+            className="w-full h-10 pl-10 pr-14 rounded-2xl border border-zinc-200/80 bg-zinc-55/40 bg-zinc-50/50 text-[13.5px] text-zinc-800 placeholder:text-zinc-400/80 outline-none focus:border-amber-400/80 focus:bg-white focus:ring-4 focus:ring-amber-500/10 transition-all duration-200"
             placeholder="Search products, orders, customers..."
           />
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] bg-stone-200 text-stone-400 px-1.5 py-0.5 rounded pointer-events-none select-none">
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-semibold bg-zinc-200/60 text-zinc-500 px-2 py-1 rounded-lg pointer-events-none select-none">
             ⌘K
           </span>
         </div>
@@ -284,7 +284,7 @@ export default function Topbar({ onMenuClick, title = "Dashboard" }) {
 
         {/* Mobile search trigger */}
         <button
-          className="md:hidden w-9 h-9 rounded-xl border border-stone-200 flex items-center justify-center text-stone-400 hover:bg-stone-50 hover:text-stone-700 transition-all"
+          className="md:hidden w-9 h-9 rounded-xl border border-zinc-200 flex items-center justify-center text-zinc-400 hover:bg-zinc-50 hover:text-zinc-700 transition-all"
           onClick={() => setIsMobileSearchOpen(true)}
         >
           <Search className="h-4 w-4" />
@@ -292,11 +292,11 @@ export default function Topbar({ onMenuClick, title = "Dashboard" }) {
         </button>
 
         {/* Notifications */}
-        <button className="relative w-9 h-9 rounded-xl border border-stone-200 flex items-center justify-center text-stone-400 hover:bg-stone-50 hover:text-stone-700 transition-all">
-          <Bell className="h-4 w-4" />
-          <span className="absolute top-2 right-2 flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-600 opacity-60" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-orange-600" />
+        <button className="relative w-10 h-10 rounded-2xl border border-zinc-200 bg-white flex items-center justify-center text-zinc-500 hover:bg-zinc-50 hover:text-zinc-800 hover:border-zinc-300 transition-all shadow-sm">
+          <Bell className="h-[18px] w-[18px]" />
+          <span className="absolute top-2.5 right-2.5 flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-500 opacity-70" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-amber-500" />
           </span>
           <span className="sr-only">Notifications</span>
         </button>
@@ -304,20 +304,20 @@ export default function Topbar({ onMenuClick, title = "Dashboard" }) {
         {/* User dropdown */}
         <div className="relative ml-1">
           <button
-            className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full border border-stone-200 bg-white hover:bg-stone-50 hover:border-stone-300 transition-all"
+            className="flex items-center gap-2 pl-1 pr-3.5 py-1 h-10 rounded-2xl border border-zinc-200 bg-white hover:bg-zinc-50 hover:border-zinc-300 transition-all shadow-sm"
             onClick={() => setIsDropdownOpen((p) => !p)}
           >
-            <div className="w-7 h-7 rounded-full bg-stone-800 flex items-center justify-center text-[11px] font-semibold text-stone-100 flex-shrink-0 overflow-hidden">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-[11px] font-bold text-zinc-950 flex-shrink-0 overflow-hidden shadow-inner">
               {user?.avatarUrl
                 ? <img src={user.avatarUrl} alt={user.name} className="w-full h-full object-cover" />
                 : getInitials(user?.name)
               }
             </div>
-            <span className="hidden sm:block text-[13px] font-medium text-stone-700 max-w-[96px] truncate">
+            <span className="hidden sm:block text-[13px] font-semibold text-zinc-700 max-w-[96px] truncate">
               {user?.name || "Admin"}
             </span>
             <ChevronDown
-              className={`hidden sm:block h-3.5 w-3.5 text-stone-400 transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""}`}
+              className={`hidden sm:block h-4 w-4 text-zinc-400 transition-transform duration-300 ${isDropdownOpen ? "rotate-180" : ""}`}
             />
           </button>
 
@@ -325,43 +325,43 @@ export default function Topbar({ onMenuClick, title = "Dashboard" }) {
             <>
               <div className="fixed inset-0 z-40" onClick={() => setIsDropdownOpen(false)} />
 
-              <div className="absolute right-0 top-[calc(100%+8px)] z-50 w-56 bg-white border border-stone-200 rounded-2xl shadow-xl shadow-stone-200/60 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150">
+              <div className="absolute right-0 top-[calc(100%+8px)] z-50 w-56 bg-white border border-zinc-100 rounded-2xl shadow-2xl shadow-zinc-200/80 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
 
                 {/* User info header */}
-                <div className="px-4 py-3.5 border-b border-stone-100">
-                  <p className="text-[13.5px] font-semibold text-stone-800 leading-tight">
+                <div className="px-4 py-3.5 bg-zinc-50/50 border-b border-zinc-100">
+                  <p className="text-[13.5px] font-bold text-zinc-800 leading-tight">
                     {user?.name || "Admin"}
                   </p>
-                  <p className="text-[11.5px] text-stone-400 mt-0.5 truncate">
+                  <p className="text-[11.5px] text-zinc-400 mt-1 truncate">
                     {user?.email || "admin@example.com"}
                   </p>
                 </div>
 
                 {/* Items */}
-                <div className="p-1.5">
+                <div className="p-2 space-y-0.5">
                   <button
-                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] text-stone-700 hover:bg-stone-50 transition-colors text-left"
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] text-zinc-700 hover:bg-zinc-50 hover:text-zinc-950 transition-colors text-left font-medium"
                     onClick={() => { setIsDropdownOpen(false); router.push("/admin/profile"); }}
                   >
-                    <UserCircle2 className="h-4 w-4 text-stone-400 flex-shrink-0" />
+                    <UserCircle2 className="h-4 w-4 text-zinc-400 flex-shrink-0" />
                     Profile
                   </button>
 
                   <button
-                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] text-stone-700 hover:bg-stone-50 transition-colors text-left"
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] text-zinc-700 hover:bg-zinc-50 hover:text-zinc-950 transition-colors text-left font-medium"
                     onClick={() => setIsDropdownOpen(false)}
                   >
-                    <Settings className="h-4 w-4 text-stone-400 flex-shrink-0" />
+                    <Settings className="h-4 w-4 text-zinc-400 flex-shrink-0" />
                     Settings
                   </button>
 
-                  <div className="my-1.5 h-px bg-stone-100" />
+                  <div className="my-1.5 h-px bg-zinc-100" />
 
                   <button
-                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] text-red-600 hover:bg-red-50 transition-colors text-left"
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-semibold text-rose-600 hover:bg-rose-50 transition-colors text-left"
                     onClick={() => { setIsDropdownOpen(false); handleLogout(); }}
                   >
-                    <LogOut className="h-4 w-4 text-red-500 flex-shrink-0" />
+                    <LogOut className="h-4 w-4 text-rose-500 flex-shrink-0" />
                     Log out
                   </button>
                 </div>

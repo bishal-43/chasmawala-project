@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { FaFacebookF, FaInstagram, FaLinkedin, FaTwitter, FaYoutube } from "react-icons/fa";
+import { motion } from "framer-motion";
+import { FaFacebookF, FaInstagram, FaLinkedin, FaYoutube } from "react-icons/fa";
 import { FaCcVisa, FaCcMastercard, FaCcPaypal, FaApplePay } from "react-icons/fa";
 
-// Sub-component for individual footer links for cleaner code
 const FooterLink = ({ href, children }) => (
   <li>
     <Link href={href} className="text-gray-400 hover:text-white transition-colors duration-300">
@@ -13,13 +13,37 @@ const FooterLink = ({ href, children }) => (
   </li>
 );
 
-// Main Footer Component
+const FooterLinkColumn = ({ title, children }) => (
+  <div>
+    <h3 className="text-base font-bold text-white tracking-wider uppercase">{title}</h3>
+    <ul className="mt-4 space-y-3">{children}</ul>
+  </div>
+);
+
+const SocialIcon = ({ href, icon }) => (
+  <a
+    href={href}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="text-gray-400 hover:text-white hover:bg-emerald-500 p-2 rounded-full transition-all duration-300"
+  >
+    {icon}
+  </a>
+);
+
 export default function Footer() {
   return (
     <footer className="bg-gray-900 text-gray-300 font-sans">
       <div className="container mx-auto px-6 py-16">
-        {/* Top Section with Newsletter */}
-        <div className="flex flex-col lg:flex-row justify-between items-center gap-8 pb-12 border-b border-gray-700">
+
+        {/* Newsletter */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.6 }}
+          className="flex flex-col lg:flex-row justify-between items-center gap-8 pb-12 border-b border-gray-700"
+        >
           <div>
             <h3 className="text-2xl font-bold text-white">Stay in the Loop</h3>
             <p className="text-gray-400 mt-2">Get the latest on new arrivals, sales, and exclusive offers.</p>
@@ -37,11 +61,17 @@ export default function Footer() {
               Subscribe
             </button>
           </form>
-        </div>
+        </motion.div>
 
-        {/* Main Footer Links Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 pt-12">
-          {/* Brand Column */}
+        {/* Links Grid */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.6, delay: 0.15 }}
+          className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 pt-12"
+        >
+          {/* Brand */}
           <div className="col-span-2 md:col-span-4 lg:col-span-1">
             <h2 className="text-2xl font-bold text-white">Chasmawala</h2>
             <p className="mt-4 text-sm text-gray-400">
@@ -55,7 +85,6 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Link Columns */}
           <FooterLinkColumn title="Shop">
             <FooterLink href="/collections/sunglasses">Sunglasses</FooterLink>
             <FooterLink href="/collections/eyeglasses">Eyeglasses</FooterLink>
@@ -76,7 +105,7 @@ export default function Footer() {
             <FooterLink href="/returns">Returns Policy</FooterLink>
             <FooterLink href="/shipping">Shipping Info</FooterLink>
           </FooterLinkColumn>
-        </div>
+        </motion.div>
       </div>
 
       {/* Bottom Bar */}
@@ -97,18 +126,3 @@ export default function Footer() {
     </footer>
   );
 }
-
-// Sub-component for social media icons
-const SocialIcon = ({ href, icon }) => (
-    <a href={href} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white hover:bg-emerald-500 p-2 rounded-full transition-all duration-300">
-        {icon}
-    </a>
-);
-
-// Sub-component for link columns
-const FooterLinkColumn = ({ title, children }) => (
-    <div>
-        <h3 className="text-base font-bold text-white tracking-wider uppercase">{title}</h3>
-        <ul className="mt-4 space-y-3">{children}</ul>
-    </div>
-);

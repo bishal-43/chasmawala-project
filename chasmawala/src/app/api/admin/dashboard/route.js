@@ -2,6 +2,7 @@
 import { connectDB } from "@/config/db";
 import Product from "@/models/productModel";
 import Order from "@/models/orderModel";
+import User from "@/models/userModel";
 import { NextResponse } from "next/server";
 
 export async function GET(req) {
@@ -16,15 +17,27 @@ export async function GET(req) {
     const totalRevenue = totalRevenueResult[0]?.total || 0;
 
     const recentOrders = await Order.find({})
+      .populate("userId", "name")
       .sort({ createdAt: -1 })
       .limit(5)
-      .select("customerName totalAmount status createdAt");
+      .lean();
+
+    const formattedRecentOrders = recentOrders.map((order) => ({
+      _id: order._id,
+      customerName:
+        order.shippingAddress?.fullName ||
+        order.userId?.name ||
+        "Guest",
+      totalAmount: order.totalAmount,
+      status: order.status || "Pending",
+      createdAt: order.createdAt,
+    }));
 
     return NextResponse.json({
       productCount,
       orderCount,
       totalRevenue,
-      recentOrders,
+      recentOrders: formattedRecentOrders,
     });
   } catch (err) {
     console.error("Dashboard API error:", err);

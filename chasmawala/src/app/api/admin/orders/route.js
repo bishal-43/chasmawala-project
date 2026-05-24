@@ -27,6 +27,7 @@ export async function GET(req) {
       status: order.status || "Pending",
       total: order.totalAmount,
       date: order.createdAt,
+      items: order.items,
     }));
 
     return NextResponse.json({ orders: formattedOrders });

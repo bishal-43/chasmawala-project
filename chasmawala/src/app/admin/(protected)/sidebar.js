@@ -101,7 +101,7 @@ export default function Sidebar({ isSidebarOpen, setSidebarOpen }) {
       {/* Mobile overlay */}
       {isSidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-30 md:hidden"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 md:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -110,36 +110,35 @@ export default function Sidebar({ isSidebarOpen, setSidebarOpen }) {
       <aside
         className={`
           fixed inset-y-0 left-0 z-40 flex flex-col w-[260px]
-          bg-white border-r border-stone-200
+          bg-zinc-950 text-zinc-100 border-r border-zinc-900
           transition-transform duration-300 ease-in-out
-          md:static md:translate-x-0 md:h-screen
+          md:sticky md:top-0 md:translate-x-0 md:h-screen
           ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
         `}
       >
         {/* ── Header ── */}
-        <div className="h-16 flex items-center justify-between px-5 border-b border-stone-200 flex-shrink-0">
+        <div className="h-16 flex items-center justify-between px-5 border-b border-zinc-900 flex-shrink-0">
           <Link href="/admin/dashboard" className="flex items-center gap-2.5 no-underline">
-            <div className="w-8 h-8 rounded-xl bg-stone-900 flex items-center justify-center flex-shrink-0">
-              <Package className="h-4 w-4 text-stone-100" />
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center flex-shrink-0 shadow-md shadow-amber-500/10">
+              <Package className="h-4 w-4 text-zinc-950 font-bold" />
             </div>
-            <span className="text-[14px] font-bold tracking-wider uppercase text-stone-800">
+            <span className="text-[14px] font-extrabold tracking-wider uppercase bg-gradient-to-r from-amber-300 via-amber-400 to-amber-200 bg-clip-text text-transparent">
               Chasmawala
             </span>
           </Link>
 
           <button
-            className="md:hidden w-8 h-8 rounded-lg border border-stone-200 flex items-center justify-center text-stone-400 hover:bg-stone-50 hover:text-stone-700 transition-all"
+            className="md:hidden w-8 h-8 rounded-lg border border-zinc-800 flex items-center justify-center text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200 transition-all"
             onClick={() => setSidebarOpen(false)}
+            aria-label="Close sidebar"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
         {/* ── Nav ── */}
-        <nav className="flex-1 overflow-y-auto py-3 px-3 scrollbar-none">
-          
-
-          <ul className="space-y-0.5">
+        <nav className="flex-1 overflow-y-auto py-4 px-3 scrollbar-none">
+          <ul className="space-y-1">
             {navItems.map(({ href, icon: Icon, label, desc }) => {
               const isActive = pathname === href;
               return (
@@ -149,10 +148,10 @@ export default function Sidebar({ isSidebarOpen, setSidebarOpen }) {
                     onClick={() => setSidebarOpen(false)}
                     className={`
                       flex items-center gap-3 px-3 py-2.5 rounded-xl
-                      border transition-all duration-150 no-underline group
+                      border transition-all duration-200 no-underline group
                       ${isActive
-                        ? "bg-stone-900 border-stone-800"
-                        : "border-transparent hover:bg-stone-50 hover:border-stone-100"
+                        ? "bg-gradient-to-r from-amber-500/10 to-amber-500/5 border-amber-500/20 text-amber-400"
+                        : "border-transparent text-zinc-400 hover:bg-zinc-900/50 hover:text-zinc-200 hover:translate-x-1"
                       }
                     `}
                   >
@@ -161,25 +160,23 @@ export default function Sidebar({ isSidebarOpen, setSidebarOpen }) {
                       className={`
                         w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all
                         ${isActive
-                          ? "bg-white/10"
-                          : "bg-stone-100 group-hover:bg-stone-200"
+                          ? "bg-amber-500/20 text-amber-400"
+                          : "bg-zinc-900 text-zinc-500 group-hover:bg-zinc-800 group-hover:text-zinc-300"
                         }
                       `}
                     >
-                      <Icon
-                        className={`h-4 w-4 ${isActive ? "text-stone-100" : "text-stone-400 group-hover:text-stone-600"}`}
-                      />
+                      <Icon className="h-4 w-4" />
                     </div>
 
                     {/* Text */}
                     <div className="flex-1 min-w-0">
                       <div
-                        className={`text-[13.5px] font-medium leading-tight ${isActive ? "text-white" : "text-stone-600 group-hover:text-stone-800"}`}
+                        className={`text-[13.5px] font-medium leading-tight ${isActive ? "text-amber-400" : "text-zinc-300 group-hover:text-zinc-100"}`}
                       >
                         {label}
                       </div>
                       <div
-                        className={`text-[11px] font-light ${isActive ? "text-stone-400" : "text-stone-300"}`}
+                        className={`text-[11px] mt-0.5 ${isActive ? "text-amber-500/60 font-light" : "text-zinc-500 font-light"}`}
                       >
                         {desc}
                       </div>
@@ -187,10 +184,10 @@ export default function Sidebar({ isSidebarOpen, setSidebarOpen }) {
 
                     {/* Chevron */}
                     <ChevronRight
-                      className={`h-3.5 w-3.5 flex-shrink-0 transition-all duration-150
+                      className={`h-3.5 w-3.5 flex-shrink-0 transition-all duration-200
                         ${isActive
-                          ? "opacity-100 text-stone-400"
-                          : "opacity-0 -translate-x-1 text-stone-300 group-hover:opacity-40 group-hover:translate-x-0"
+                          ? "opacity-100 text-amber-500"
+                          : "opacity-0 -translate-x-1 text-zinc-600 group-hover:opacity-100 group-hover:translate-x-0"
                         }
                       `}
                     />
@@ -200,20 +197,20 @@ export default function Sidebar({ isSidebarOpen, setSidebarOpen }) {
             })}
           </ul>
 
-          <div className="mt-4 mx-1 h-px bg-stone-100" />
+          <div className="mt-4 mx-1 h-px bg-zinc-900" />
         </nav>
 
         {/* ── Footer: user card ── */}
-        <div className="p-3 border-t border-stone-100 flex-shrink-0">
-          <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-stone-50 border border-stone-100">
-            <div className="w-8 h-8 rounded-full bg-stone-800 flex items-center justify-center text-[11px] font-semibold text-stone-100 flex-shrink-0">
+        <div className="p-3 border-t border-zinc-900 flex-shrink-0">
+          <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-zinc-900/65 border border-zinc-800/80">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-[11px] font-bold text-zinc-950 flex-shrink-0">
               A
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-[12.5px] font-medium text-stone-700 truncate">Admin</div>
-              <div className="text-[11px] text-stone-400">Administrator</div>
+              <div className="text-[12.5px] font-medium text-zinc-200 truncate">Admin</div>
+              <div className="text-[11px] text-zinc-500 animate-pulse">Online</div>
             </div>
-            <span className="w-2 h-2 rounded-full bg-emerald-400 ring-2 ring-white flex-shrink-0" />
+            <span className="w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-zinc-950 flex-shrink-0 animate-pulse" />
           </div>
         </div>
       </aside>

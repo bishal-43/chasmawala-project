@@ -5,7 +5,7 @@ import Image from "next/image";
 
 export default function HomeHero() {
   return (
-    <section className="relative min-h-[85vh] bg-gradient-to-br from-slate-900 via-teal-900 to-slate-900 overflow-hidden">
+    <section className="relative min-h-[85vh] bg-gradient-to-br from-slate-900 via-teal-900 to-slate-900 overflow-hidden pt-16 sm:pt-[72px]">
       {/* Animated Background Pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-0 left-0 w-96 h-96 bg-teal-400 rounded-full blur-3xl animate-pulse" />
@@ -22,7 +22,7 @@ export default function HomeHero() {
 
       <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
 
-      <div className="container mx-auto px-6 pt-32 pb-20 relative z-10">
+      <div className="container mx-auto px-6 pt-16 pb-20 relative z-10">
         <div className="max-w-4xl">
           {/* Badge */}
           <motion.div
